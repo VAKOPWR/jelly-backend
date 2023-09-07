@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Table(name = "location")
 public class Location {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String userId;
     private BigDecimal latitude;
