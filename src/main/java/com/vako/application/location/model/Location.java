@@ -9,10 +9,18 @@ import java.math.BigDecimal;
 @Data
 @Table(name = "location")
 public class Location {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
+
+    @Column(name = "user_id")
     private String userId;
+
+    @Column(name = "latitude")
     private BigDecimal latitude;
+
+    @Column(name = "longitude")
     private BigDecimal longitude;
 }

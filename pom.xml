@@ -49,6 +49,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>9.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -79,10 +84,10 @@
                 <version>2.12.0</version>
                 <configuration>
                     <schemaVersion>v2</schemaVersion>
-                    <resourceGroup>jelly-backend-1694012118516-rg</resourceGroup>
-                    <appName>jelly-backend-1694012118516</appName>
+                    <resourceGroup>jelly-prod</resourceGroup>
+                    <appName>jelly-backend</appName>
                     <pricingTier>F1</pricingTier>
-                    <region>centralus</region>
+                    <region>germanywestcentral</region>
                     <runtime>
                         <os>Linux</os>
                         <javaVersion>Java 17</javaVersion>
