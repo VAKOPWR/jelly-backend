@@ -1,7 +1,7 @@
-package com.vako.application.location.controller;
+package com.vako.application.user.controller;
 
-import com.vako.application.location.model.User;
-import com.vako.application.location.service.UserService;
+import com.vako.application.user.model.User;
+import com.vako.application.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
-package com.vako.application.location.service;
+package com.vako.application.group.service;
 
-import com.vako.application.location.model.Group;
-import com.vako.application.location.repository.GroupRepository;
+import com.vako.application.group.model.Group;
+import com.vako.application.group.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;

@@ -1,7 +1,7 @@
-package com.vako.application.location.controller;
+package com.vako.application.group.controller;
 
-import com.vako.application.location.model.Group;
-import com.vako.application.location.service.GroupService;
+import com.vako.application.group.model.Group;
+import com.vako.application.group.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;

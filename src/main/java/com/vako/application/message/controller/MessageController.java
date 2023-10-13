@@ -1,7 +1,7 @@
-package com.vako.application.location.controller;
+package com.vako.application.message.controller;
 
-import com.vako.application.location.model.Message;
-import com.vako.application.location.service.MessageService;
+import com.vako.application.message.model.Message;
+import com.vako.application.message.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +24,11 @@ public class MessageController {
         return messageService.getAllMessages();
     }
 
-    @GetMapping("/{senderId}")
-    public Optional<Message> getMessageBySenderId(@PathVariable Long senderId) {
-        return messageService.getMessageBySenderId(senderId);
+    @GetMapping("/{groupId}")
+    public List<Message> getMessagesBySenderAndGroup(
+            @PathVariable Long groupId
+    ) {
+        return messageService.getMessagesByGroup(groupId);
     }
 
     @PostMapping
@@ -34,13 +36,11 @@ public class MessageController {
         return messageService.createMessage(message);
     }
 
-    @PutMapping("/{senderId}")
-    public Message updateMessage(@PathVariable Long senderId, @RequestBody Message updatedMessage) throws ChangeSetPersister.NotFoundException {
-        return messageService.updateMessage(senderId, updatedMessage);
-    }
-
-    @DeleteMapping("/{senderId}")
-    public void deleteMessage(@PathVariable Long senderId) {
-        messageService.deleteMessage(senderId);
+    @DeleteMapping("/{senderId}/{groupId}")
+    public void deleteMessage(
+            @PathVariable Long senderId,
+            @PathVariable Long groupId
+    ) {
+        messageService.deleteMessage(senderId, groupId);
     }
 }

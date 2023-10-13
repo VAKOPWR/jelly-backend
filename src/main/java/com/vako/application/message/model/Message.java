@@ -1,5 +1,7 @@
-package com.vako.application.location.model;
+package com.vako.application.message.model;
 
+import com.vako.application.group.model.Group;
+import com.vako.application.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,7 +13,11 @@ import java.util.Date;
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long senderId;
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)

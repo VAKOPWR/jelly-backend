@@ -1,5 +1,7 @@
-package com.vako.application.location.model;
+package com.vako.application.groupUsers.model;
 
+import com.vako.application.group.model.Group;
+import com.vako.application.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,7 +11,11 @@ import lombok.Data;
 public class GroupUsers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long uid;
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)

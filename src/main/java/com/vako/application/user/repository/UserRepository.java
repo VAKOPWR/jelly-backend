@@ -1,6 +1,6 @@
-package com.vako.application.location.repository;
+package com.vako.application.user.repository;
 
-import com.vako.application.location.model.User;
+import com.vako.application.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

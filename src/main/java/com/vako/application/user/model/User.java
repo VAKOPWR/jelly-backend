@@ -1,7 +1,10 @@
-package com.vako.application.location.model;
+package com.vako.application.user.model;
 
+import com.vako.application.groupUsers.model.GroupUsers;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.Set;
 
 @Entity
 @Data
@@ -14,10 +17,10 @@ public class User {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
-    @Column(name = "position_lat", nullable = false)
+    @Column(name = "position_lat")
     private Double positionLat;
 
-    @Column(name = "position_lon", nullable = false)
+    @Column(name = "position_lon")
     private Double positionLon;
 
     @Column(name = "is_shaking", nullable = false)
@@ -28,4 +31,7 @@ public class User {
 
     @Column(name = "profile_picture", nullable = false)
     private String profilePicture;
+
+    @OneToMany(mappedBy = "user")
+    private Set<GroupUsers> groupUsers;
 }
