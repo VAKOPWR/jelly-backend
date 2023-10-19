@@ -1,7 +1,9 @@
 package com.vako.application.user.service;
 
+import com.vako.application.user.controller.LocationUpdateRequest;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,12 @@ public class UserService {
         } else {
             throw new ChangeSetPersister.NotFoundException();
         }
+    }
+
+    @Transactional
+    public void storeLocation(final LocationUpdateRequest location, final String userName) {
+        if (userRepository.existsByNickname(userName))
+            userRepository.updateUserLocation(location.getLongitude(), location.getLatitude(), userName);
     }
 
     public void deleteUser(Long id) {

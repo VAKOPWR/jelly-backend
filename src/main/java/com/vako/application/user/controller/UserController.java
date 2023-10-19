@@ -1,5 +1,7 @@
 package com.vako.application.user.controller;
 
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
@@ -42,6 +44,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+    }
+
+    @PutMapping("/update/location")
+    public void updateLocation(@RequestBody final LocationUpdateRequest location, @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) throws FirebaseAuthException {
+        userService.storeLocation(location, decodedToken.getEmail());
     }
 }
 

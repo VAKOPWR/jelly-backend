@@ -12,10 +12,5 @@
 //@Repository
 //public interface LocationRepository extends JpaRepository<Location, Long> {
 //
-//    boolean existsByUserId(final String userId);
-//    @Modifying
-//    @Transactional
-//    @Query("update Location l set l.longitude = :longitude, l.latitude = :latitude WHERE l.userId = :userId")
-//    void updateUserLocation(@Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("userId") String userId);
-//
+
 //}
