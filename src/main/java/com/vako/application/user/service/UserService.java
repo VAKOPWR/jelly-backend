@@ -1,9 +1,11 @@
 package com.vako.application.user.service;
 
+import com.google.firebase.auth.FirebaseToken;
 import com.vako.application.user.controller.LocationUpdateRequest;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
@@ -11,13 +13,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -27,25 +25,27 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public User getUserByNickname(String nickname) {
+        return userRepository.findByNickname(nickname).orElseThrow();
+    }
+
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long id, User updatedUser) throws ChangeSetPersister.NotFoundException {
-        Optional<User> existingUser = userRepository.findById(id);
-
-        if (existingUser.isPresent()) {
-            updatedUser.setId(id);
-            return userRepository.save(updatedUser);
-        } else {
-            throw new ChangeSetPersister.NotFoundException();
-        }
-    }
-
     @Transactional
-    public void storeLocation(final LocationUpdateRequest location, final String userName) {
-        if (userRepository.existsByNickname(userName))
-            userRepository.updateUserLocation(location.getLongitude(), location.getLatitude(), userName);
+    public void storeLocation(final LocationUpdateRequest location, final FirebaseToken firebaseUser) {
+        if (userRepository.existsByEmail(firebaseUser.getEmail()))
+            userRepository.updateUserLocation(location.getLongitude(), location.getLatitude(), firebaseUser.getEmail());
+        else {
+            final User user = User.builder()
+                    .positionLat(location.getLatitude())
+                    .positionLon(location.getLongitude())
+                    .email(firebaseUser.getEmail())
+                    .nickname(firebaseUser.getName())
+                    .build();
+            userRepository.save(user);
+        }
     }
 
     public void deleteUser(Long id) {

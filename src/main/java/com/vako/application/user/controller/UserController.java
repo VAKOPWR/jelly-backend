@@ -4,22 +4,19 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/v1/user")
+@AllArgsConstructor
 public class UserController {
-    private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -36,19 +33,12 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) throws ChangeSetPersister.NotFoundException {
-        return userService.updateUser(id, updatedUser);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
-    }
-
-    @PutMapping("/update/location")
-    public void updateLocation(@RequestBody final LocationUpdateRequest location, @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) throws FirebaseAuthException {
-        userService.storeLocation(location, decodedToken.getEmail());
+    @PutMapping("/location/update")
+    public ResponseEntity updateLocation(@RequestBody final LocationUpdateRequest location,
+                                         @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken)
+            throws FirebaseAuthException {
+        userService.storeLocation(location, decodedToken);
+        return ResponseEntity.ok().build();
     }
 }
 
