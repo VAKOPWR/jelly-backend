@@ -16,7 +16,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
             "inner join User u on f.friendOne.id = u.id "+
             "inner join User us on f.friendTwo.id = us.id " +
             "where f.status = :friendshipStatus and (u.email = :email or us.email = :email)" )
-    List<Friendship> getFriendshipsByStatus(@Param("email") final String email, @Param("identifier") final FriendshipStatus friendshipStatus);
+    List<Friendship> getFriendshipsByStatus(@Param("email") final String email, @Param("friendshipStatus") final FriendshipStatus friendshipStatus);
 
     @Modifying
     @Transactional
