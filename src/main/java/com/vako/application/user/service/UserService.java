@@ -25,8 +25,12 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User getUserByNickname(String nickname) {
-        return userRepository.findByNickname(nickname).orElseThrow();
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow();
+    }
+
+    public User getUserByIdentifier(String identifier) {
+        return userRepository.findByIdentifier(identifier).orElseThrow();
     }
 
     public User createUser(User user) {
