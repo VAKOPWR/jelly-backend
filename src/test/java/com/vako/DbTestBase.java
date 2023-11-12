@@ -1,5 +1,6 @@
 package com.vako;
 
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -7,6 +8,7 @@ import org.testcontainers.containers.MSSQLServerContainer;
 import org.testcontainers.junit.jupiter.Container;
 
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class DbTestBase {
     @Container
     private static final MSSQLServerContainer<?> SQLSERVER_CONTAINER = new MSSQLServerContainer<>(

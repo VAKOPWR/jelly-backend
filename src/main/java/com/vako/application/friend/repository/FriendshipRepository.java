@@ -9,17 +9,20 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     @Query("select f from Friendship f " +
-            "inner join User u on f.friendOne.id = u.id "+
-            "inner join User us on f.friendTwo.id = us.id " +
-            "where f.status = :friendshipStatus and (u.email = :email or us.email = :email)" )
+            "where f.status = :friendshipStatus and (f.friendOne.email = :email or f.friendTwo.email = :email)" )
     List<Friendship> getFriendshipsByStatus(@Param("email") final String email, @Param("friendshipStatus") final FriendshipStatus friendshipStatus);
 
     @Modifying
-    @Transactional
-    @Query("update Friendship f set f.status = :newStatus WHERE f.friendOne.id = :friendOneId and f.friendTwo.id = :friendTwoId")
-    void updateStatus(@Param("friendOneId") final Long friendOneId, @Param("friendTwoId") final Long friendTwoId, @Param("newStatus") final FriendshipStatus newStatus);
+    @Query("update Friendship f " +
+            "set f.status = :newStatus WHERE f.friendOne.id= :friendOneId and f.friendTwo.id = :friendTwoId ")
+    int updateStatus(@Param("friendOneId") final Long friendOneId, @Param("friendTwoId") final Long friendTwoId, @Param("newStatus") final FriendshipStatus newStatus);
+
+    @Query("select f from Friendship f " +
+            "WHERE f.friendOne.id= :friendOneId and f.friendTwo.id = :friendTwoId")
+    Optional<Friendship> getFriendshipByFriendIds(@Param("friendOneId") final Long friendOneId, @Param("friendTwoId") final Long friendTwoId);
 }
