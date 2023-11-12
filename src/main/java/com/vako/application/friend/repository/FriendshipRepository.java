@@ -19,8 +19,8 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     @Modifying
     @Query("update Friendship f " +
-            "set f.status = :newStatus WHERE f.friendOne.id= :friendOneId and f.friendTwo.id = :friendTwoId ")
-    int updateStatus(@Param("friendOneId") final Long friendOneId, @Param("friendTwoId") final Long friendTwoId, @Param("newStatus") final FriendshipStatus newStatus);
+            "set f.status = :newStatus WHERE f.friendOne.id= :friendOneId and f.friendTwo.email = :friendTwoEmail ")
+    int updateStatus(@Param("friendOneId") final Long friendOneId, @Param("friendTwoEmail") final String friendTwoEmail, @Param("newStatus") final FriendshipStatus newStatus);
 
     @Query("select f from Friendship f " +
             "WHERE f.friendOne.id= :friendOneId and f.friendTwo.id = :friendTwoId")

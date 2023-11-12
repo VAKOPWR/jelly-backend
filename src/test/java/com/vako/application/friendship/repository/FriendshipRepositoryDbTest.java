@@ -62,7 +62,7 @@ public class FriendshipRepositoryDbTest extends DbTestBase {
 
 
         //when
-        int asd = friendshipRepository.updateStatus(user1.getId(), user2.getId(), FriendshipStatus.ACTIVE);
+        int asd = friendshipRepository.updateStatus(user1.getId(), user2.getEmail(), FriendshipStatus.ACTIVE);
 
         //then
         final List<Friendship> allFriendships = friendshipRepository.findAll();

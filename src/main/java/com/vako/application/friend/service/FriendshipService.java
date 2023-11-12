@@ -54,8 +54,7 @@ public class FriendshipService {
 
     @Transactional
     public void acceptFriendRequest(final String accepteeEmail, final Long senderId) {
-        final User acceptee = userService.getUserByEmail(accepteeEmail);
-        friendshipRepository.updateStatus(senderId, acceptee.getId(), ACTIVE);
+        friendshipRepository.updateStatus(senderId, accepteeEmail, ACTIVE);
     }
 
 }
