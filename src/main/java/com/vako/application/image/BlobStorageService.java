@@ -15,7 +15,7 @@ public class BlobStorageService {
     private final BlobContainerClient blobContainerClient;
     public BlobStorageService(@Value("${azure.blob.connection-string}") final String connectionString, @Value("${azure.blob.container-name}") final String containerName){
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
-                .connectionString("")
+                .connectionString(connectionString)
                 .buildClient();
         blobContainerClient = blobServiceClient.getBlobContainerClient(containerName);
     }
