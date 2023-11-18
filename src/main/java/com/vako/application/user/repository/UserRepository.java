@@ -21,10 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.email = :identifier or u.nickname = :identifier")
     Optional<User> findByIdentifier(@Param("identifier") final String identifier);
 
-    @Modifying
-    @Transactional
-    @Query("update User u set u.positionLon = :longitude, u.positionLat = :latitude WHERE u.nickname = :nickname")
-    void updateUserLocation(@Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("nickname") String nickname);
-
 }
 

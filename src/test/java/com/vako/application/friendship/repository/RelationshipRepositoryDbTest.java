@@ -4,6 +4,7 @@ import com.vako.DbTestBase;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.model.RelationshipStatus;
 import com.vako.application.relationship.repository.RelationshipRepository;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -33,8 +34,8 @@ public class RelationshipRepositoryDbTest extends DbTestBase {
 
     @BeforeEach
     void setUp() {
-        user1 = userRepository.save(User.builder().email(MAIL_1).nickname(NICKNAME_1).isShaking(false).stealthChoice(0).build());
-        user2 = userRepository.save(User.builder().email(MAIL_2).nickname(NICKNAME_2).isShaking(false).stealthChoice(0).build());
+        user1 = userRepository.save(User.builder().email(MAIL_1).nickname(NICKNAME_1).stealthChoice(StealthChoice.PRECISE).build());
+        user2 = userRepository.save(User.builder().email(MAIL_2).nickname(NICKNAME_2).stealthChoice(StealthChoice.PRECISE).build());
         relationshipRepository.save(Relationship.builder().userOne(user1).userTwo(user2).status(RelationshipStatus.PENDING).build());
     }
 

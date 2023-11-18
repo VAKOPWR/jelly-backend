@@ -2,6 +2,7 @@ package com.vako.application.user.model;
 
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.groupUsers.model.GroupUsers;
+import com.vako.application.user_status.model.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,15 +30,6 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "position_lat")
-    private BigDecimal positionLat;
-
-    @Column(name = "position_lon")
-    private BigDecimal positionLon;
-
-    @Column(name = "is_shaking")
-    private Boolean isShaking;
-
     @Column(name = "stealth_choice")
     private StealthChoice stealthChoice = StealthChoice.PRECISE;
 
@@ -52,4 +44,7 @@ public class User {
 
     @OneToMany
     private Set<Relationship> relationships;
+
+    @OneToOne(mappedBy = "user")
+    private UserStatus userStatus;
 }

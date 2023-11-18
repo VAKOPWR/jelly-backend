@@ -38,14 +38,6 @@ public class UserController {
         return userService.createUser(user);
     }
 
-    @PutMapping("/location/update")
-    public ResponseEntity updateLocation(@RequestBody final LocationUpdateRequest location,
-                                         @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken)
-            throws FirebaseAuthException {
-        userService.storeLocation(location, decodedToken);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping(value = "/avatars", consumes = {"multipart/form-data"})
     public ResponseEntity<String> storeImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("image") final MultipartFile file) throws IOException {
         blobStorageService.saveImage(file, decodedToken.getEmail());

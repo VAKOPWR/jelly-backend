@@ -26,5 +26,6 @@ public class GroupUsers {
 
     @Column(name = "is_pinned", nullable = false)
     private boolean isPinned = false;
+
 }
 
