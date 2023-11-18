@@ -35,7 +35,7 @@ public class RelationshipService {
     }
 
     public List<User> getActiveFriends(final String email) {
-        final List<Relationship> pendingRelationships = relationshipRepository.getFriendshipsByStatus(email, ACTIVE);
+        final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByStatus(email, ACTIVE);
         return pendingRelationships.stream()
                 .map(relationship -> {
                     if (relationship.getUserOne().getEmail().equals(email)) return relationship.getUserTwo();
@@ -45,7 +45,7 @@ public class RelationshipService {
     }
 
     public List<User> getPendingRequests(final String email) {
-        final List<Relationship> pendingRelationships = relationshipRepository.getFriendshipsByStatus(email, PENDING);
+        final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByStatus(email, PENDING);
         return pendingRelationships.stream()
                 .map(Relationship::getUserOne)
                 .collect(Collectors.toList());

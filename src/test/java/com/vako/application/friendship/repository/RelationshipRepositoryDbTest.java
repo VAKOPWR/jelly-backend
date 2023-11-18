@@ -78,7 +78,7 @@ public class RelationshipRepositoryDbTest extends DbTestBase {
         //given
 
         //when
-        final List<Relationship> pendingRelationships = relationshipRepository.getFriendshipsByStatus(user1.getEmail(), RelationshipStatus.PENDING);
+        final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByStatus(user1.getEmail(), RelationshipStatus.PENDING);
 
         //then
         assertEquals(1, pendingRelationships.size());

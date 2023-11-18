@@ -4,6 +4,8 @@ import com.vako.application.group.model.Group;
 import com.vako.application.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 @Entity
 @Data
@@ -22,10 +24,12 @@ public class GroupUsers {
     private Group group;
 
     @Column(name = "is_muted", nullable = false)
-    private boolean isMuted = false;
+    @ColumnDefault(value = "false")
+    private boolean isMuted;
 
     @Column(name = "is_pinned", nullable = false)
-    private boolean isPinned = false;
+    @ColumnDefault(value = "false")
+    private boolean isPinned;
 
 }
 

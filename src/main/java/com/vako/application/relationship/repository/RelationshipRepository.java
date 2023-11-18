@@ -13,15 +13,15 @@ import java.util.Optional;
 public interface RelationshipRepository extends JpaRepository<Relationship, Long> {
 
     @Query("select f from Relationship f " +
-            "where f.status = :friendshipStatus and (f.userOne.email = :email or f.userTwo.email = :email)" )
-    List<Relationship> getFriendshipsByStatus(@Param("email") final String email, @Param("friendshipStatus") final RelationshipStatus relationshipStatus);
+            "where f.status = :relationshipStatus and (f.userOne.email = :email or f.userTwo.email = :email)" )
+    List<Relationship> getRelationshipsByStatus(@Param("email") final String email, @Param("relationshipStatus") final RelationshipStatus relationshipStatus);
 
     @Modifying
     @Query("update Relationship f " +
-            "set f.status = :newStatus WHERE f.userOne.id= :friendOneId and f.userTwo.email = :friendTwoEmail ")
-    int updateStatus(@Param("friendOneId") final Long friendOneId, @Param("friendTwoEmail") final String friendTwoEmail, @Param("newStatus") final RelationshipStatus newStatus);
+            "set f.status = :newStatus WHERE f.userOne.id= :userOneId and f.userTwo.email = :userTwoEmail ")
+    int updateStatus(@Param("userOneId") final Long userOneId, @Param("userTwoEmail") final String userTwoEmail, @Param("newStatus") final RelationshipStatus newStatus);
 
     @Query("select f from Relationship f " +
-            "WHERE f.userOne.id= :friendOneId and f.userTwo.id = :friendTwoId")
-    Optional<Relationship> getFriendshipByFriendIds(@Param("friendOneId") final Long friendOneId, @Param("friendTwoId") final Long friendTwoId);
+            "WHERE f.userOne.id= :userOneId and f.userTwo.id = :userTwoId")
+    Optional<Relationship> getRelationshipByUserIds(@Param("userOneId") final Long userOneId, @Param("userTwoId") final Long userTwoId);
 }

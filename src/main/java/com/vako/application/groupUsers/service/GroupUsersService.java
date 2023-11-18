@@ -36,8 +36,6 @@ public class GroupUsersService {
         GroupUsers groupUser = new GroupUsers();
         groupUser.setUser(userRepository.getById(userId));
         groupUser.setGroup(groupRepository.getById(groupId));
-        groupUser.setMuted(false);
-        groupUser.setPinned(false);
         groupUsersRepository.save(groupUser);
     }
 
