@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@Table(name = "Group")
+@Table(name = "[Group]")
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +32,5 @@ public class Group {
 
     @OneToMany(mappedBy = "group")
     private Set<GroupUsers> groupUsers;
+
 }

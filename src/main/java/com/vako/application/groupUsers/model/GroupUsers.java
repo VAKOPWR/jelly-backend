@@ -21,8 +21,10 @@ public class GroupUsers {
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
-    @Column(name = "stealth_choice", nullable = false)
-    private Integer stealthChoice;
+    @Column(name = "is_muted", nullable = false)
+    private boolean isMuted = false;
 
+    @Column(name = "is_pinned", nullable = false)
+    private boolean isPinned = false;
 }
 

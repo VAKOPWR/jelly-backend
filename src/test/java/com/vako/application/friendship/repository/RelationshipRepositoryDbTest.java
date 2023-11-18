@@ -1,9 +1,9 @@
 package com.vako.application.friendship.repository;
 
 import com.vako.DbTestBase;
-import com.vako.application.friend.model.Friendship;
-import com.vako.application.friend.model.FriendshipStatus;
-import com.vako.application.friend.repository.FriendshipRepository;
+import com.vako.application.relationship.model.Relationship;
+import com.vako.application.relationship.model.RelationshipStatus;
+import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FriendshipRepositoryDbTest extends DbTestBase {
+public class RelationshipRepositoryDbTest extends DbTestBase {
 
     private static final String MAIL_1 = "email@mail.com";
     private static final String NICKNAME_1 = "nickname1";
@@ -26,7 +26,7 @@ public class FriendshipRepositoryDbTest extends DbTestBase {
 
 
     @Autowired
-    private FriendshipRepository friendshipRepository;
+    private RelationshipRepository relationshipRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -35,7 +35,7 @@ public class FriendshipRepositoryDbTest extends DbTestBase {
     void setUp() {
         user1 = userRepository.save(User.builder().email(MAIL_1).nickname(NICKNAME_1).isShaking(false).stealthChoice(0).build());
         user2 = userRepository.save(User.builder().email(MAIL_2).nickname(NICKNAME_2).isShaking(false).stealthChoice(0).build());
-        friendshipRepository.save(Friendship.builder().friendOne(user1).friendTwo(user2).status(FriendshipStatus.PENDING).build());
+        relationshipRepository.save(Relationship.builder().userOne(user1).userTwo(user2).status(RelationshipStatus.PENDING).build());
     }
 
     @AfterEach
@@ -48,8 +48,8 @@ public class FriendshipRepositoryDbTest extends DbTestBase {
     void shouldCreateFriendPair() {
 
         //then
-        final List<Friendship> allFriendships = friendshipRepository.findAll();
-        assertEquals(1, allFriendships.size());
+        final List<Relationship> allRelationships = relationshipRepository.findAll();
+        assertEquals(1, allRelationships.size());
     }
 
 
@@ -62,12 +62,12 @@ public class FriendshipRepositoryDbTest extends DbTestBase {
 
 
         //when
-        int asd = friendshipRepository.updateStatus(user1.getId(), user2.getEmail(), FriendshipStatus.ACTIVE);
+        int asd = relationshipRepository.updateStatus(user1.getId(), user2.getEmail(), RelationshipStatus.ACTIVE);
 
         //then
-        final List<Friendship> allFriendships = friendshipRepository.findAll();
-        assertEquals(1, allFriendships.size());
-        assertEquals(FriendshipStatus.ACTIVE, allFriendships.get(0).getStatus());
+        final List<Relationship> allRelationships = relationshipRepository.findAll();
+        assertEquals(1, allRelationships.size());
+        assertEquals(RelationshipStatus.ACTIVE, allRelationships.get(0).getStatus());
     }
 
 
@@ -77,12 +77,12 @@ public class FriendshipRepositoryDbTest extends DbTestBase {
         //given
 
         //when
-        final List<Friendship> pendingFriendships = friendshipRepository.getFriendshipsByStatus(user1.getEmail(), FriendshipStatus.PENDING);
+        final List<Relationship> pendingRelationships = relationshipRepository.getFriendshipsByStatus(user1.getEmail(), RelationshipStatus.PENDING);
 
         //then
-        assertEquals(1, pendingFriendships.size());
-        assertEquals(FriendshipStatus.PENDING, pendingFriendships.get(0).getStatus());
-        assertEquals(user2, pendingFriendships.get(0).getFriendTwo());
+        assertEquals(1, pendingRelationships.size());
+        assertEquals(RelationshipStatus.PENDING, pendingRelationships.get(0).getStatus());
+        assertEquals(user2, pendingRelationships.get(0).getUserTwo());
     }
 
 }

@@ -51,5 +51,6 @@ public class UserController {
         blobStorageService.saveImage(file, decodedToken.getEmail());
         return ResponseEntity.ok("");
     }
+
 }
 

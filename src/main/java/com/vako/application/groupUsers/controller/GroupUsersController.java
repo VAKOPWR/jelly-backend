@@ -30,19 +30,11 @@ public class GroupUsersController {
         return groupUsersService.getGroupUsersById(userId, groupId);
     }
 
-    @PostMapping
-    public GroupUsers createGroupUsers(@RequestBody GroupUsers groupUsers) {
-        return groupUsersService.createGroupUsers(groupUsers);
-    }
+//    @PostMapping
+//    public GroupUsers createGroupUsers(@RequestBody GroupUsers groupUsers) {
+//        return groupUsersService.createGroupUsers(groupUsers);
+//    }
 
-    @PutMapping("/{userId}/{groupId}")
-    public GroupUsers updateStealthChoiceByUserAndGroup(
-            @PathVariable Long userId,
-            @PathVariable Long groupId,
-            @RequestParam("stealthChoice") Integer newStealthChoice
-    ) throws ChangeSetPersister.NotFoundException {
-        return groupUsersService.updateStealthChoiceByUserAndGroup(userId, groupId, newStealthChoice);
-    }
 
 
     @DeleteMapping("/{userId}/{groupId}")

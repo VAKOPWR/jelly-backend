@@ -1,6 +1,6 @@
 package com.vako.application.user.model;
 
-import com.vako.application.friend.model.Friendship;
+import com.vako.application.relationship.model.Relationship;
 import com.vako.application.groupUsers.model.GroupUsers;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,14 +39,17 @@ public class User {
     private Boolean isShaking;
 
     @Column(name = "stealth_choice")
-    private Integer stealthChoice;
+    private StealthChoice stealthChoice = StealthChoice.PRECISE;
 
     @Column(name = "profile_picture")
     private String profilePicture;
+
+    @Column(name = "registration_token")
+    private String registrationToken;
 
     @OneToMany(mappedBy = "user")
     private Set<GroupUsers> groupUsers;
 
     @OneToMany
-    private Set<Friendship> friendships;
+    private Set<Relationship> relationships;
 }
