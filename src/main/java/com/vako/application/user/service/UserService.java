@@ -35,21 +35,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    @Transactional
-    public void storeLocation(final LocationUpdateRequest location, final FirebaseToken firebaseUser) {
-        if (userRepository.existsByEmail(firebaseUser.getEmail()))
-            userRepository.updateUserLocation(location.getLongitude(), location.getLatitude(), firebaseUser.getEmail());
-        else {
-            final User user = User.builder()
-                    .positionLat(location.getLatitude())
-                    .positionLon(location.getLongitude())
-                    .email(firebaseUser.getEmail())
-                    .nickname(firebaseUser.getName())
-                    .build();
-            userRepository.save(user);
-        }
-    }
-
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }

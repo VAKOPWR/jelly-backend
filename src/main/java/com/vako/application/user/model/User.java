@@ -1,7 +1,8 @@
 package com.vako.application.user.model;
 
-import com.vako.application.friend.model.Friendship;
+import com.vako.application.relationship.model.Relationship;
 import com.vako.application.groupUsers.model.GroupUsers;
+import com.vako.application.user_status.model.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,24 +30,21 @@ public class User {
     @Column(name = "email")
     private String email;
 
-    @Column(name = "position_lat")
-    private BigDecimal positionLat;
-
-    @Column(name = "position_lon")
-    private BigDecimal positionLon;
-
-    @Column(name = "is_shaking")
-    private Boolean isShaking;
-
     @Column(name = "stealth_choice")
-    private Integer stealthChoice;
+    private StealthChoice stealthChoice = StealthChoice.PRECISE;
 
     @Column(name = "profile_picture")
     private String profilePicture;
+
+    @Column(name = "registration_token")
+    private String registrationToken;
 
     @OneToMany(mappedBy = "user")
     private Set<GroupUsers> groupUsers;
 
     @OneToMany
-    private Set<Friendship> friendships;
+    private Set<Relationship> relationships;
+
+    @OneToOne(mappedBy = "user")
+    private UserStatus userStatus;
 }
