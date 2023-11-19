@@ -15,7 +15,7 @@ public interface UserStatusRepository extends JpaRepository<UserStatus, Long> {
 
     @Modifying
     @Transactional
-    @Query("update UserStatus us set us.positionLon = :longitude, us.positionLat = :latitude, us.speed = :speed WHERE us.user.nickname = :email ")
-    void updateLocation(@Param("email") String email, @Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("speed") float speed);
+    @Query("update UserStatus us set us.positionLon = :longitude, us.positionLat = :latitude, us.speed = :speed WHERE us.user.id = :id ")
+    void updateLocation(@Param("id") Long id, @Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("speed") float speed);
 
 }

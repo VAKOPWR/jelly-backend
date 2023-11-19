@@ -44,6 +44,6 @@ public class User {
     @OneToMany
     private Set<Relationship> relationships;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
     private UserStatus userStatus;
 }

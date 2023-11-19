@@ -1,6 +1,8 @@
 package com.vako.api.relationship.controller;
 
 import com.google.firebase.auth.FirebaseToken;
+import com.vako.api.user.response.BasicUserResponse;
+import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.service.RelationshipService;
 import com.vako.application.user.model.User;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,12 @@ public class RelationshipController {
     @PostMapping("/invite/{identifier}")
     public ResponseEntity<Void> sendFriendRequestByNickname(@PathVariable("identifier") final String identifier, @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
         relationshipService.sendFriendRequest(decodedToken.getEmail(), identifier);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteFriendRequestById(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("id") final Long id){
+        relationshipService.deleteFriendship(decodedToken.getEmail(), id);
         return ResponseEntity.ok().build();
     }
 
@@ -39,4 +47,21 @@ public class RelationshipController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("/decline/{id}")
+    public ResponseEntity<Void> declineFriendRequests(@PathVariable("id") final Long id, @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        relationshipService.declineFriendRequest(decodedToken.getEmail(), id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/basic")
+    public ResponseEntity<List<BasicUserResponse>> getBasicFriendInfo(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final List<BasicUserResponse> basicFriendInfo = relationshipService.getBasicFriendInfo(decodedToken.getEmail());
+        return ResponseEntity.ok(basicFriendInfo);
+    }
+
+    @GetMapping("/statuses")
+    public ResponseEntity<List<UserStatusResponse>> getFriendStatuses(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final List<UserStatusResponse> friendStatuses = relationshipService.getFriendStatuses(decodedToken.getEmail());
+        return ResponseEntity.ok(friendStatuses);
+    }
 }

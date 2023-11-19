@@ -3,7 +3,9 @@ package com.vako.api.user.controller;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
+import com.vako.api.user.response.BasicUserResponse;
 import com.vako.application.image.BlobStorageService;
+import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,7 @@ public class UserController {
 
     private final BlobStorageService blobStorageService;
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Boolean> createUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
         final boolean wasCreated = userService.createUserIfDoesntExist(decodedToken);
         return ResponseEntity.ok(wasCreated);
@@ -34,9 +36,24 @@ public class UserController {
     }
 
     @PutMapping("/status/update")
-    public void updateLocation(
+    public ResponseEntity<Void> updateLocation(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, final UserStatusUpdateRequest userStatusUpdateRequest) {
         userService.updateLocation(decodedToken.getEmail(), userStatusUpdateRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/basic/{identifier}")
+    public ResponseEntity<BasicUserResponse> getUserByIdentifier(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("identifier") final String identifier) {
+        final BasicUserResponse basicUserResponse = userService.getBasicUserByIdentifier(identifier);
+        return ResponseEntity.ok(basicUserResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("id") final Long id) {
+        final User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 
 }

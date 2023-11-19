@@ -29,17 +29,14 @@ public class UserDbTest extends DbTestBase {
     void shouldUpdateUserStatusGivenUserWasCreated() {
         //given
         final var user = userRepository.save(User.builder().email(MAIL_1).nickname(NICKNAME_1).stealthChoice(StealthChoice.PRECISE)
+                        .userStatus(UserStatus.builder()
+                                .isShaking(false)
+                                .isOnline(false)
+                                .version(1L)
+                                .build())
                 .build());
-        final var status = userStatusRepository.save(UserStatus.builder()
-                .isShaking(false)
-                .isOnline(false)
-                .version(1L)
-                        .user(user)
-                .build());
-        final var users = userStatusRepository.findAll();
-        final var asd = userRepository.findAll();
         //when
-        userStatusRepository.updateLocation(NICKNAME_1, BigDecimal.ONE, BigDecimal.ONE, 23.4f);
+        userStatusRepository.updateLocation(user.getId(), BigDecimal.ONE, BigDecimal.ONE, 23.4f);
 
         //then
         final List<UserStatus> userStatuses = userStatusRepository.findAll();
