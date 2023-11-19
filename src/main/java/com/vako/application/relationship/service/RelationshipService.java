@@ -25,9 +25,9 @@ public class RelationshipService {
 
     private final UserService userService;
 
-    public void sendFriendRequest(final String senderNickname, final String recipientIdentifier) {
+    public void sendFriendRequest(final String senderNickname, final Long id) {
         final User sender = userService.getUserByIdentifier(senderNickname);
-        final User recipient = userService.getUserByIdentifier(recipientIdentifier);
+        final User recipient = userService.getUserById(id);
         final Relationship relationship = relationshipRepository.save(Relationship.builder()
                         .userOne(sender)
                         .userTwo(recipient)
@@ -84,7 +84,6 @@ public class RelationshipService {
                         .positionLat(user.getUserStatus().getPositionLat())
                         .batteryLevel(user.getUserStatus().getBattery_level())
                         .speed(user.getUserStatus().getSpeed())
-                        .isShaking(user.getUserStatus().getIsShaking())
                         .build())
                 .collect(Collectors.toList());
         return friendStatuses;

@@ -45,6 +45,11 @@ public class UserService {
     public boolean createUserIfDoesntExist(FirebaseToken token) {
         if (userRepository.existsByEmail(token.getEmail()))
             return false;
+        createUser(token);
+        return true;
+    }
+
+    private void createUser(FirebaseToken token) {
         final User userToSave = User.builder()
                 .email(token.getEmail())
                 .nickname(token.getName())
@@ -56,7 +61,6 @@ public class UserService {
                         .build())
                 .build();
         userRepository.save(userToSave);
-        return true;
     }
 
     public void deleteUser(Long id) {

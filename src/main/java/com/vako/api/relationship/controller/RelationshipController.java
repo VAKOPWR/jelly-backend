@@ -17,9 +17,9 @@ import java.util.List;
 public class RelationshipController {
 
     private final RelationshipService relationshipService;
-    @PostMapping("/invite/{identifier}")
-    public ResponseEntity<Void> sendFriendRequestByNickname(@PathVariable("identifier") final String identifier, @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
-        relationshipService.sendFriendRequest(decodedToken.getEmail(), identifier);
+    @PostMapping("/invite/{id}")
+    public ResponseEntity<Void> sendFriendRequestById(@PathVariable("id") final Long id, @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        relationshipService.sendFriendRequest(decodedToken.getEmail(), id);
         return ResponseEntity.ok().build();
     }
 

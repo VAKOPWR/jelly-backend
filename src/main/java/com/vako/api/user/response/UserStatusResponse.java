@@ -11,8 +11,6 @@ public class UserStatusResponse {
     private BigDecimal positionLat;
     private BigDecimal positionLon;
     private float speed;
-    private Boolean isShaking;
     private int batteryLevel;
-    private boolean isOnline;
 
 }
