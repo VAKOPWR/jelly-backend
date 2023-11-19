@@ -20,11 +20,11 @@ public class UserStatusController {
     }
 
     @PutMapping("/{id}/location")
-    public UserStatus updateLocation(
+    public void updateLocation(
             @PathVariable Long id,
             @RequestParam BigDecimal positionLat,
             @RequestParam BigDecimal positionLon,
             @RequestParam float speed) {
-        return userStatusService.updateLocation(id, positionLat, positionLon, speed);
+        userStatusService.updateLocation(id, positionLat, positionLon, speed);
     }
 }

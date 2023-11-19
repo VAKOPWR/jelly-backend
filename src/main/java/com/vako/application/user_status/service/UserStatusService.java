@@ -2,6 +2,7 @@ package com.vako.application.user_status.service;
 
 import com.vako.application.user_status.model.UserStatus;
 import com.vako.application.user_status.repository.UserStatusRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +18,8 @@ public class UserStatusService {
         return userStatusRepository.save(userStatus);
     }
 
-    public UserStatus updateLocation(Long userStatusId, BigDecimal positionLat, BigDecimal positionLon, float speed) {
-        UserStatus existingUserStatus = userStatusRepository.findById(userStatusId)
-                .orElseThrow(() -> new RuntimeException("UserStatus not found"));
-
-        existingUserStatus.setPositionLat(positionLat);
-        existingUserStatus.setPositionLon(positionLon);
-        existingUserStatus.setSpeed(speed);
-
-        return userStatusRepository.save(existingUserStatus);
+    @Transactional
+    public void updateLocation(Long userId, BigDecimal positionLat, BigDecimal positionLon, float speed) {
+        userStatusRepository.updateLocation(userId, positionLat, positionLon, speed);
     }
 }
