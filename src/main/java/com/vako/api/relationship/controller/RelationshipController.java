@@ -1,4 +1,4 @@
-package com.vako.application.relationship.controller;
+package com.vako.api.relationship.controller;
 
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.application.relationship.service.RelationshipService;

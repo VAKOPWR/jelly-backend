@@ -1,4 +1,4 @@
-package com.vako.application.group.controller;
+package com.vako.api.group.controller;
 
 import com.vako.application.group.model.Group;
 import com.vako.application.group.service.GroupService;

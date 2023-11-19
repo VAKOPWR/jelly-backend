@@ -1,6 +1,6 @@
-package com.vako.application.user_status.repository;
+package com.vako.application.user.repository;
 
-import com.vako.application.user_status.model.UserStatus;
+import com.vako.application.user.model.UserStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,7 +15,7 @@ public interface UserStatusRepository extends JpaRepository<UserStatus, Long> {
 
     @Modifying
     @Transactional
-    @Query("update UserStatus us set us.positionLon = :longitude, us.positionLat = :latitude, us.speed = :speed WHERE us.user.id = :userId")
-    void updateLocation(@Param("userId") Long userId, @Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("speed") float speed);
+    @Query("update UserStatus us set us.positionLon = :longitude, us.positionLat = :latitude, us.speed = :speed WHERE us.user.nickname = :email ")
+    void updateLocation(@Param("email") String email, @Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("speed") float speed);
 
 }

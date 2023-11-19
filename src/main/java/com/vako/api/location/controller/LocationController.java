@@ -1,4 +1,4 @@
-//package com.vako.application.location.controller;
+package com.vako.api.location.controller;//package com.vako.application.location.controller;
 //
 //import com.google.firebase.auth.FirebaseAuth;
 //import com.google.firebase.auth.FirebaseAuthException;

@@ -1,5 +1,6 @@
-package com.vako.application.user_status.model;
+package com.vako.application.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.groupUsers.model.GroupUsers;
 import com.vako.application.user.model.User;
@@ -46,7 +47,7 @@ public class UserStatus {
     private LocalDateTime timestamp;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "uid", referencedColumnName = "id")
     private User user;
 
     @Version

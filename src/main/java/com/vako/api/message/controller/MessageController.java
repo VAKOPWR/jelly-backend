@@ -1,4 +1,4 @@
-package com.vako.application.message.controller;
+package com.vako.api.message.controller;
 
 import com.vako.application.message.model.Message;
 import com.vako.application.message.service.MessageService;

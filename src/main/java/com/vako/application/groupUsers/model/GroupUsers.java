@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @Entity
 @Data
 @Table(name = "Group_Users")
-public class GroupUsers {
+public class    GroupUsers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

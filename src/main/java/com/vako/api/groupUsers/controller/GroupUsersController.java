@@ -1,9 +1,8 @@
-package com.vako.application.groupUsers.controller;
+package com.vako.api.groupUsers.controller;
 
 import com.vako.application.groupUsers.model.GroupUsers;
 import com.vako.application.groupUsers.service.GroupUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,13 +28,6 @@ public class GroupUsersController {
                                                   @PathVariable Long groupId) {
         return groupUsersService.getGroupUsersById(userId, groupId);
     }
-
-//    @PostMapping
-//    public GroupUsers createGroupUsers(@RequestBody GroupUsers groupUsers) {
-//        return groupUsersService.createGroupUsers(groupUsers);
-//    }
-
-
 
     @DeleteMapping("/{userId}/{groupId}")
     public void deleteGroupUsers(@PathVariable Long userId,

@@ -1,15 +1,14 @@
 package com.vako.application.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.groupUsers.model.GroupUsers;
-import com.vako.application.user_status.model.UserStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 @Entity
@@ -45,6 +44,6 @@ public class User {
     @OneToMany
     private Set<Relationship> relationships;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private UserStatus userStatus;
 }
