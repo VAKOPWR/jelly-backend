@@ -9,11 +9,17 @@ import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.repository.UserStatusRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class UserService {
+
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     private final UserRepository userRepository;
 
@@ -71,5 +77,18 @@ public class UserService {
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
         userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getSpeed());
+    }
+
+    public List<BasicUserResponse> usersWithNicknameLike(final String nickname, final Integer pageSize) {
+        final Integer pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+        final List<User> users = userRepository.findAllByNicknameLike(nickname, PageRequest.of(0, pageSizeToUse));
+        final List<BasicUserResponse> basicUserResponses = users.stream().map(user -> BasicUserResponse.builder()
+                        .id(user.getId())
+                        .profilePicture(user.getProfilePicture())
+                        .nickname(user.getNickname())
+                        .isOnline(user.getUserStatus().isOnline())
+                        .build())
+                .toList();
+        return basicUserResponses;
     }
 }

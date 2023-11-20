@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.ws.rs.QueryParam;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -44,16 +46,22 @@ public class UserController {
 
     @GetMapping("/basic/{identifier}")
     public ResponseEntity<BasicUserResponse> getUserByIdentifier(
-            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("identifier") final String identifier) {
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("identifier") final String identifier) {
         final BasicUserResponse basicUserResponse = userService.getBasicUserByIdentifier(identifier);
         return ResponseEntity.ok(basicUserResponse);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(
-            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("id") final Long id) {
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("id") final Long id) {
         final User user = userService.getUserById(id);
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/search/{nickname}")
+    public ResponseEntity<List<BasicUserResponse>> getUsersWithNicknameLike(@PathVariable("nickname") final String nickname, @QueryParam("pagesize") final Integer pageSize) {
+        final List<BasicUserResponse> usersWithNicknameLike = userService.usersWithNicknameLike(nickname, pageSize);
+        return ResponseEntity.ok(usersWithNicknameLike);
     }
 
 }
