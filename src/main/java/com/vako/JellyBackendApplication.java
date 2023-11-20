@@ -7,17 +7,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.core.io.ClassPathResource;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 @SpringBootApplication
 public class JellyBackendApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) throws IOException {
-        FileInputStream serviceAccount =
-                new FileInputStream("src/main/resources/service-account-key.json");
+        InputStream serviceAccount =
+                new ClassPathResource("service-account-key.json").getInputStream();
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
