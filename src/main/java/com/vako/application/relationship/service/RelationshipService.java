@@ -4,6 +4,7 @@ import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
+import com.vako.application.user.mapper.UserMapper;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
 import jakarta.transaction.Transactional;
@@ -20,6 +21,8 @@ import static com.vako.application.relationship.model.RelationshipStatus.*;
 @AllArgsConstructor
 @Slf4j
 public class RelationshipService {
+
+    private final UserMapper userMapper;
 
     private final RelationshipRepository relationshipRepository;
 
@@ -67,26 +70,11 @@ public class RelationshipService {
     }
 
     public List<BasicUserResponse> getBasicFriendInfo(final String email) {
-        final List<BasicUserResponse> basicUserResponses = getActiveFriends(email).stream().map(user -> BasicUserResponse.builder()
-                .id(user.getId())
-                .profilePicture(user.getProfilePicture())
-                .nickname(user.getNickname())
-                .isOnline(user.getUserStatus().isOnline())
-                .build())
-                .collect(Collectors.toList());
-        return basicUserResponses;
+        return getActiveFriends(email).stream().map(userMapper::userToBasicUserResponse).toList();
     }
 
     public List<UserStatusResponse> getFriendStatuses(final String email) {
-        final List<UserStatusResponse> friendStatuses = getActiveFriends(email).stream().map(user -> UserStatusResponse.builder()
-                        .id(user.getId())
-                        .positionLon(user.getUserStatus().getPositionLon())
-                        .positionLat(user.getUserStatus().getPositionLat())
-                        .batteryLevel(user.getUserStatus().getBattery_level())
-                        .speed(user.getUserStatus().getSpeed())
-                        .build())
-                .collect(Collectors.toList());
-        return friendStatuses;
+        return getActiveFriends(email).stream().map(userMapper::userToUserStatusResponse).toList();
     }
 
 }

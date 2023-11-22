@@ -38,7 +38,7 @@ public class UserStatus {
     private Boolean isShaking = false;
 
     @Column(name = "battery_level")
-    private int battery_level;
+    private int batteryLevel;
 
     @Column(name = "is_online")
     private boolean isOnline = false;

@@ -1,6 +1,5 @@
 package com.vako.api.user.controller;
 
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
