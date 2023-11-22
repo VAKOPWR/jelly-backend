@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -81,7 +82,13 @@ public class UserService {
     @Transactional
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
-        userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getSpeed());
+        UserStatus userStatus = userStatusRepository.getReferenceById(user.getId());
+        userStatus.setPositionLat(userStatusUpdateRequest.getLatitude());
+        userStatus.setPositionLon(userStatusUpdateRequest.getLongitude());
+        userStatus.setSpeed(userStatusUpdateRequest.getSpeed());
+        userStatusRepository.save(userStatus);
+
+//        userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getSpeed());
     }
 
     public List<BasicUserResponse> usersWithNicknameLike(final String nickname, final Integer pageSize) {
@@ -96,4 +103,5 @@ public class UserService {
                 .toList();
         return basicUserResponses;
     }
+
 }
