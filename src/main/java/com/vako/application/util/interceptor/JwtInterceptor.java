@@ -23,10 +23,13 @@ public class JwtInterceptor implements HandlerInterceptor {
    public boolean preHandle(
            HttpServletRequest request, HttpServletResponse response, Object handler) {
       try {
-         FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(request.getHeader(HttpHeaders.AUTHORIZATION));
+         String tokenId  = request.getHeader(HttpHeaders.AUTHORIZATION);
+         System.out.println(tokenId);
+         FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
          request.setAttribute("FirebaseToken", decodedToken);
          return true;
       } catch (FirebaseAuthException e) {
+         System.out.println(e);
          throw new JellyException(JellyExceptionType.NOT_AUTHORIZED);
       }
    }
