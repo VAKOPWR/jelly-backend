@@ -62,13 +62,16 @@ public class UserService {
                 .nickname(token.getName())
                 .stealthChoice(StealthChoice.PRECISE)
                 .profilePicture(token.getPicture())
-                .userStatus(UserStatus.builder()
-                        .isShaking(false)
-                        .isOnline(false)
-                        .version(1L)
-                        .build())
                 .build();
-        userRepository.save(userToSave);
+
+        UserStatus userStatusToSave = UserStatus.builder()
+                .user(userRepository.save(userToSave))
+                .isShaking(false)
+                .isOnline(false)
+                .version(1L)
+                .build();
+
+        userStatusRepository.save(userStatusToSave);
     }
 
     public void deleteUser(Long id) {
