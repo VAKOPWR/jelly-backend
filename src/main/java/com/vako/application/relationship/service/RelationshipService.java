@@ -4,6 +4,7 @@ import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
 import jakarta.transaction.Transactional;
@@ -32,6 +33,8 @@ public class RelationshipService {
                         .userOne(sender)
                         .userTwo(recipient)
                         .status(PENDING)
+                        .stealthChoiceUserOne(StealthChoice.PRECISE)
+                        .stealthChoiceUserTwo(StealthChoice.PRECISE)
                 .build());
     }
 

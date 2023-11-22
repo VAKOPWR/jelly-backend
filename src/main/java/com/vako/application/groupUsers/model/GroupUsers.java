@@ -25,11 +25,11 @@ public class    GroupUsers {
 
     @Column(name = "is_muted", nullable = false)
     @ColumnDefault(value = "false")
-    private boolean isMuted;
+    private boolean isMuted = false;
 
     @Column(name = "is_pinned", nullable = false)
     @ColumnDefault(value = "false")
-    private boolean isPinned;
+    private boolean isPinned = false;
 
 }
 

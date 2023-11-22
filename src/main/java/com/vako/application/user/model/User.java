@@ -29,6 +29,7 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "stealth_choice")
     private StealthChoice stealthChoice = StealthChoice.PRECISE;
 

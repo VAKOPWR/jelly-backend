@@ -3,6 +3,7 @@ package com.vako.application.user.service;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.model.UserStatus;
 import com.vako.application.user.repository.UserRepository;
@@ -59,6 +60,7 @@ public class UserService {
         final User userToSave = User.builder()
                 .email(token.getEmail())
                 .nickname(token.getName())
+                .stealthChoice(StealthChoice.PRECISE)
                 .profilePicture(token.getPicture())
                 .userStatus(UserStatus.builder()
                         .isShaking(false)

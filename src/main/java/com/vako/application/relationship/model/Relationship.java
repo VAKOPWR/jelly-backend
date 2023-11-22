@@ -24,12 +24,15 @@ public class Relationship {
     @JoinColumn(name = "user_two", referencedColumnName = "id")
     private User userTwo;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private RelationshipStatus status;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "stealth_choice_user_one")
     private StealthChoice stealthChoiceUserOne = StealthChoice.PRECISE;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "stealth_choice_user_two")
     private StealthChoice stealthChoiceUserTwo = StealthChoice.PRECISE;
 }
