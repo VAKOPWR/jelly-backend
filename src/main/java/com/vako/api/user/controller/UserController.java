@@ -38,7 +38,7 @@ public class UserController {
 
     @PutMapping("/status/update")
     public ResponseEntity<Void> updateLocation(
-            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, final UserStatusUpdateRequest userStatusUpdateRequest) {
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestBody final UserStatusUpdateRequest userStatusUpdateRequest) {
         userService.updateLocation(decodedToken.getEmail(), userStatusUpdateRequest);
         return ResponseEntity.ok().build();
     }

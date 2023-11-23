@@ -13,9 +13,9 @@ import java.math.BigDecimal;
 @Repository
 public interface UserStatusRepository extends JpaRepository<UserStatus, Long> {
 
-    @Modifying
+    @Modifying(flushAutomatically = true)
     @Transactional
     @Query("update UserStatus us set us.positionLon = :longitude, us.positionLat = :latitude, us.speed = :speed WHERE us.user.id = :id ")
-    void updateLocation(@Param("id") Long id, @Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("speed") float speed);
+    int updateLocation(@Param("id") Long id, @Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("speed") float speed);
 
 }

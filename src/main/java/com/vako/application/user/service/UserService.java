@@ -10,12 +10,14 @@ import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.repository.UserStatusRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class UserService {
 
@@ -32,10 +34,7 @@ public class UserService {
     }
 
     public BasicUserResponse getBasicUserByIdentifier(String identifier) {
-        var abc = getUserByIdentifier(identifier);
-        var sad = userRepository.findAll();
-        var us = userStatusRepository.findAll();
-        return userMapper.userToBasicUserResponse(abc);
+        return userMapper.userToBasicUserResponse(getUserByIdentifier(identifier));
     }
 
     public User getUserById(Long id) {
@@ -53,7 +52,9 @@ public class UserService {
     }
 
     private User createUser(FirebaseToken token) {
-        return userRepository.save(userMapper.firebaseTokenToUserMapper(token));
+        final User user = userRepository.save(userMapper.firebaseTokenToUserMapper(token));
+        userStatusRepository.save(new UserStatus(user));
+        return user;
     }
 
     public void deleteUser(Long id) {
@@ -63,11 +64,12 @@ public class UserService {
     @Transactional
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
-        userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getSpeed());
+        final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getSpeed());
+        if (updates == 1) log.info("Updated user status for user with email {}", email);
     }
 
     public List<BasicUserResponse> usersWithNicknameLike(final String nickname, final Integer pageSize) {
-        final Integer pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+        final int pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
         final List<User> users = userRepository.findAllByNicknameLike(nickname, PageRequest.of(0, pageSizeToUse));
         return users.stream().map(userMapper::userToBasicUserResponse)
                 .toList();

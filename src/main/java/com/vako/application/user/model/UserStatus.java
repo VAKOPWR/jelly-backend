@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 @Table(name = "user_status")
 public class UserStatus {
 
+    public UserStatus(User user) {
+        this.setUser(user);
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,11 +40,14 @@ public class UserStatus {
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "uid", referencedColumnName = "id")
     private User user;
 
     @Version
     private Long version;
 
+    public UserStatus() {
+
+    }
 }
