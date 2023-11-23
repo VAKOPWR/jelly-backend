@@ -27,7 +27,6 @@ public class JellyExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {Exception.class})
     protected ResponseEntity<Object> handleGenericException(Exception ex, WebRequest request) {
-        System.out.println("asdasd");
         return handleJellyException(new JellyException(JellyExceptionType.INTERNAL), request);
     }
 }

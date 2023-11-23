@@ -24,7 +24,6 @@ public class JwtInterceptor implements HandlerInterceptor {
            HttpServletRequest request, HttpServletResponse response, Object handler) {
       try {
          String tokenId  = request.getHeader(HttpHeaders.AUTHORIZATION);
-         System.out.println(tokenId);
          FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(tokenId);
          request.setAttribute("FirebaseToken", decodedToken);
          return true;

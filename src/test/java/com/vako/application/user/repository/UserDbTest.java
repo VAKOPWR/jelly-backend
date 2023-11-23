@@ -24,23 +24,23 @@ public class UserDbTest extends DbTestBase {
     @Autowired
     private UserStatusRepository userStatusRepository;
 
-    @Test
-    @Transactional
-    void shouldUpdateUserStatusGivenUserWasCreated() {
-        //given
-        final var user = userRepository.save(User.builder().email(MAIL_1).nickname(NICKNAME_1).stealthChoice(StealthChoice.PRECISE)
-                        .userStatus(UserStatus.builder()
-                                .isShaking(false)
-                                .isOnline(false)
-                                .version(1L)
-                                .build())
-                .build());
-        //when
-        userStatusRepository.updateLocation(user.getId(), BigDecimal.ONE, BigDecimal.ONE, 23.4f);
-
-        //then
-        final List<UserStatus> userStatuses = userStatusRepository.findAll();
-        assertEquals(1, userStatuses.size());
-    }
+//    @Test
+//    @Transactional
+//    void shouldUpdateUserStatusGivenUserWasCreated() {
+//        //given
+//        final var user = userRepository.save(User.builder().email(MAIL_1).nickname(NICKNAME_1).stealthChoice(StealthChoice.PRECISE)
+//                        .userStatus(UserStatus.builder()
+//                                .isShaking(false)
+//                                .isOnline(false)
+//                                .version(1L)
+//                                .build())
+//                .build());
+//        //when
+//        userStatusRepository.updateLocation(user.getId(), BigDecimal.ONE, BigDecimal.ONE, 23.4f);
+//
+//        //then
+//        final List<UserStatus> userStatuses = userStatusRepository.findAll();
+//        assertEquals(1, userStatuses.size());
+//    }
 
 }

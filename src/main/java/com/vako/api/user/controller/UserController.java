@@ -25,8 +25,8 @@ public class UserController {
     private final BlobStorageService blobStorageService;
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
-        final boolean wasCreated = userService.createUserIfDoesntExist(decodedToken);
+    public ResponseEntity<User> createUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final User wasCreated = userService.createUserIfDoesntExist(decodedToken);
         return ResponseEntity.ok(wasCreated);
     }
 
@@ -63,5 +63,11 @@ public class UserController {
         return ResponseEntity.ok(usersWithNicknameLike);
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<User> deleteUserById(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("id") final Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
 }
 

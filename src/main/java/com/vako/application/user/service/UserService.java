@@ -32,7 +32,10 @@ public class UserService {
     }
 
     public BasicUserResponse getBasicUserByIdentifier(String identifier) {
-        return userMapper.userToBasicUserResponse(getUserByIdentifier(identifier));
+        var abc = getUserByIdentifier(identifier);
+        var sad = userRepository.findAll();
+        var us = userStatusRepository.findAll();
+        return userMapper.userToBasicUserResponse(abc);
     }
 
     public User getUserById(Long id) {
@@ -43,16 +46,14 @@ public class UserService {
         return userRepository.findByIdentifier(identifier).orElseThrow();
     }
 
-    public boolean createUserIfDoesntExist(FirebaseToken token) {
+    public User createUserIfDoesntExist(FirebaseToken token) {
         if (userRepository.existsByEmail(token.getEmail()))
-            return false;
-        createUser(token);
-        return true;
+            return null;
+        return createUser(token);
     }
 
-    private void createUser(FirebaseToken token) {
-        final User userToSave = userMapper.firebaseTokenToUserMapper(token);
-        userRepository.save(userToSave);
+    private User createUser(FirebaseToken token) {
+        return userRepository.save(userMapper.firebaseTokenToUserMapper(token));
     }
 
     public void deleteUser(Long id) {

@@ -1,26 +1,16 @@
 package com.vako.application.user.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vako.application.relationship.model.Relationship;
-import com.vako.application.groupUsers.model.GroupUsers;
-import com.vako.application.user.model.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Data
 @Table(name = "user_status")
 public class UserStatus {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,7 +31,7 @@ public class UserStatus {
     private int batteryLevel;
 
     @Column(name = "is_online")
-    private boolean isOnline = false;
+    private Boolean isOnline = false;
 
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
@@ -52,4 +42,5 @@ public class UserStatus {
 
     @Version
     private Long version;
+
 }

@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Data
 @Table(name = "[user]")
 public class User {
@@ -41,9 +38,6 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<GroupUsers> groupUsers;
 
-    @OneToMany
-    private Set<Relationship> relationships;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "user")
     private UserStatus userStatus;
 }
