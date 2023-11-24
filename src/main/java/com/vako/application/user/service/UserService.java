@@ -52,9 +52,9 @@ public class UserService {
     }
 
     private User createUser(FirebaseToken token) {
-        final User user = userRepository.save(userMapper.firebaseTokenToUserMapper(token));
-        userStatusRepository.save(new UserStatus(user));
-        return user;
+//        final User user = userRepository.save(userMapper.firebaseTokenToUserMapper(token));
+        userStatusRepository.save(new UserStatus(userMapper.firebaseTokenToUserMapper(token)));
+        return null;
     }
 
     public void deleteUser(Long id) {
@@ -64,7 +64,7 @@ public class UserService {
     @Transactional
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
-        final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getSpeed());
+        final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getSpeed());
         if (updates == 1) log.info("Updated user status for user with email {}", email);
     }
 

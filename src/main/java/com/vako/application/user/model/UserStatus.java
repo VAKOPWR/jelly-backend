@@ -2,6 +2,7 @@ package com.vako.application.user.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,8 +41,9 @@ public class UserStatus {
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
 
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "uid", referencedColumnName = "id")
+    @ToString.Exclude
     private User user;
 
     @Version

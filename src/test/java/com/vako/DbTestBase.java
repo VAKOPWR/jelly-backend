@@ -1,12 +1,7 @@
 package com.vako;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.vako.application.config.FirebaseConfig;
-import com.vako.application.config.WebConfig;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MSSQLServerContainer;
@@ -17,7 +12,8 @@ import org.testcontainers.junit.jupiter.Container;
 //@ContextConfiguration(classes = {WebConfig.class, FirebaseConfig.class})
 public abstract class DbTestBase {
 
-    protected static final String UID = "MTGraBdnnUTms9Lk9Vfm9a9v50y1";
+    protected static final String UID_1 = "MTGraBdnnUTms9Lk9Vfm9a9v50y1";
+    protected static final String UID_2 = "aBsM7hWfxJTnD3McQyIm1MH5gbf2";
 
     protected static final String API_PATH = "/api/v1";
     protected static String token;
