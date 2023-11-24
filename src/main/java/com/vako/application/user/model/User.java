@@ -35,7 +35,7 @@ public class User {
     @Column(name = "registration_token")
     private String registrationToken;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<GroupUsers> groupUsers;
 
     @OneToOne(mappedBy = "user")

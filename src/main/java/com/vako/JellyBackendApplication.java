@@ -14,15 +14,10 @@ import java.io.IOException;
 public class JellyBackendApplication {
 
     public static void main(String[] args) throws IOException {
-        FileInputStream serviceAccount =
-                new FileInputStream("src/main/resources/service-account-key.json");
 
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
-
-        FirebaseApp.initializeApp(options);
         SpringApplication.run(JellyBackendApplication.class, args);
     }
+
+
 
 }
