@@ -31,11 +31,7 @@ public class RelationshipService {
     public void sendFriendRequest(final String senderNickname, final Long id) {
         final User sender = userService.getUserByIdentifier(senderNickname);
         final User recipient = userService.getUserById(id);
-        final Relationship relationship = relationshipRepository.save(Relationship.builder()
-                        .userOne(sender)
-                        .userTwo(recipient)
-                        .status(PENDING)
-                .build());
+        final Relationship relationship = relationshipRepository.save(new Relationship(sender, recipient));
     }
 
     public void deleteFriendship(final String email, final Long id) {
@@ -43,8 +39,8 @@ public class RelationshipService {
     }
 
     public List<User> getActiveFriends(final String email) {
-        final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByStatus(email, ACTIVE);
-        return pendingRelationships.stream()
+        final List<Relationship> activeFriends = relationshipRepository.getRelationshipsByStatus(email, ACTIVE);
+        return activeFriends.stream()
                 .map(relationship -> {
                     if (relationship.getUserOne().getEmail().equals(email)) return relationship.getUserTwo();
                     else return relationship.getUserOne();
@@ -61,12 +57,15 @@ public class RelationshipService {
 
     @Transactional
     public void acceptFriendRequest(final String accepteeEmail, final Long senderId) {
-        relationshipRepository.updateStatus(senderId, accepteeEmail, ACTIVE);
+        final User user = userService.getUserByEmail(accepteeEmail);
+        final int updated = relationshipRepository.updateStatus(senderId, user.getId(), ACTIVE);
+        if (updated == 1) log.info("Set users with ids: {}, {} to status ACTIVE", senderId, user.getId());
     }
 
     @Transactional
     public void declineFriendRequest(final String declineeEmail, final Long senderId) {
-        relationshipRepository.updateStatus(senderId, declineeEmail, DECLINED);
+        final User user = userService.getUserByEmail(declineeEmail);
+        relationshipRepository.updateStatus(senderId, user.getId(), DECLINED);
     }
 
     public List<BasicUserResponse> getBasicFriendInfo(final String email) {

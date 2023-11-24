@@ -7,11 +7,16 @@ import com.vako.application.groupUsers.model.GroupUsers;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 @Data
 @Table(name = "[user]")
+@EqualsAndHashCode
 public class User {
 
     @Id
@@ -34,9 +39,27 @@ public class User {
     private String registrationToken;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<GroupUsers> groupUsers;
+    private Set<GroupUsers> groupUsers = Collections.emptySet();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     private UserStatus userStatus;
+
+    @OneToMany(mappedBy = "userOne", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    private List<Relationship> sentRelationships = Collections.emptyList();
+
+    @OneToMany(mappedBy = "userTwo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    private List<Relationship> incomingRelationships = Collections.emptyList();
+
+    @JsonIgnore
+    public List<User> getRelatedUsers() {
+        return Stream.concat(sentRelationships.stream(), incomingRelationships.stream())
+                .map(relationship -> {
+                    if (relationship.getUserOne().equals(this)) return relationship.getUserTwo();
+                    else return relationship.getUserOne();
+                } )
+                .toList();
+    }
 }

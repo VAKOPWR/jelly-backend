@@ -18,8 +18,8 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
 
     @Modifying
     @Query("update Relationship f " +
-            "set f.status = :newStatus WHERE f.userOne.id= :userOneId and f.userTwo.email = :userTwoEmail ")
-    int updateStatus(@Param("userOneId") final Long userOneId, @Param("userTwoEmail") final String userTwoEmail, @Param("newStatus") final RelationshipStatus newStatus);
+            "set f.status = :newStatus WHERE f.userOne.id= :userOneId and f.userTwo.id = :userTwoId ")
+    int updateStatus(@Param("userOneId") final Long userOneId, @Param("userTwoId") final Long userTwoId, @Param("newStatus") final RelationshipStatus newStatus);
 
     @Query("select f from Relationship f " +
             "WHERE f.userOne.id= :userOneId and f.userTwo.id = :userTwoId")

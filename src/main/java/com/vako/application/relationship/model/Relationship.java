@@ -7,25 +7,32 @@ import lombok.*;
 
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 @Data
 @Table(name = "relationship")
+@EqualsAndHashCode
 public class Relationship {
+
+    public Relationship(User userOne, User userTwo) {
+        this.userOne = userOne;
+        this.userTwo = userTwo;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_one", referencedColumnName = "id")
+    @ToString.Exclude
     private User userOne;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_two", referencedColumnName = "id")
+    @ToString.Exclude
     private User userTwo;
 
     @Column(name = "status")
-    private RelationshipStatus status;
+    private RelationshipStatus status = RelationshipStatus.PENDING;
 
     @Column(name = "stealth_choice_user_one")
     private StealthChoice stealthChoiceUserOne = StealthChoice.PRECISE;

@@ -1,6 +1,7 @@
 package com.vako.exception;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 @AllArgsConstructor
 @Component
+@Slf4j
 public class JellyExceptionHandler extends ResponseEntityExceptionHandler {
     private final JellyErrorMapper forgetfulnessErrorMapper;
 
@@ -27,6 +29,7 @@ public class JellyExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {Exception.class})
     protected ResponseEntity<Object> handleGenericException(Exception ex, WebRequest request) {
+        log.error(ex.getMessage());
         return handleJellyException(new JellyException(JellyExceptionType.INTERNAL), request);
     }
 }

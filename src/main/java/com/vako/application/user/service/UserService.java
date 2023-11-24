@@ -52,9 +52,8 @@ public class UserService {
     }
 
     private User createUser(FirebaseToken token) {
-//        final User user = userRepository.save(userMapper.firebaseTokenToUserMapper(token));
-        userStatusRepository.save(new UserStatus(userMapper.firebaseTokenToUserMapper(token)));
-        return null;
+        final User user = userMapper.firebaseTokenToUserMapper(token);
+        return userStatusRepository.save(new UserStatus(userMapper.firebaseTokenToUserMapper(token))).getUser();
     }
 
     public void deleteUser(Long id) {
