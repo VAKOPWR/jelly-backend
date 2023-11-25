@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.vako.DbTestBase;
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.model.User;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -47,6 +49,9 @@ public class RelationshipControllerTest extends DbTestBase {
     private User friendOne;
 
     private User friendTwo;
+
+    @Autowired
+    private UserStatusRepository userStatusRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -173,5 +178,53 @@ public class RelationshipControllerTest extends DbTestBase {
         assertThat(basicUserResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
         assertThat(basicUserResponses.get(0).getIsOnline()).isFalse();
         assertThat(basicUserResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
+    }
+
+    @Test
+    void shouldReturnListOfBasicUserResponsesWhenGettingBasicFriendInfo() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/friend/basic")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<BasicUserResponse> basicUserResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BasicUserResponse>>(){});
+        assertThat(basicUserResponses).hasSize(1);
+        assertThat(basicUserResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
+        assertThat(basicUserResponses.get(0).getIsOnline()).isFalse();
+        assertThat(basicUserResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
+    }
+
+
+    @Test
+    void shouldReturnListOfUserStatusResponsesWhenGettingBasicFriendInfo() throws Exception {
+        //given
+        var lon = BigDecimal.valueOf(2.5);
+        var lat = BigDecimal.valueOf(6.5);
+        var speed = 23;
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
+        userStatusRepository.updateLocation(friendOne.getId(), lon, lat, 23);
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/friend/statuses")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<UserStatusResponse> userStatusResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<UserStatusResponse>>(){});
+        assertThat(userStatusResponses).hasSize(1);
+        assertThat(userStatusResponses.get(0).getId()).isEqualTo(friendOne.getId());
+        assertThat(userStatusResponses.get(0).getSpeed()).isEqualTo(speed);
+        assertThat(userStatusResponses.get(0).getPositionLon()).isEqualTo(lon);
+        assertThat(userStatusResponses.get(0).getPositionLat()).isEqualTo(lat);
     }
 }
