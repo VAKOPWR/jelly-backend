@@ -25,7 +25,8 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
             "WHERE f.userOne.id= :userOneId and f.userTwo.id = :userTwoId")
     Optional<Relationship> getRelationshipByUserIds(@Param("userOneId") final Long userOneId, @Param("userTwoId") final Long userTwoId);
 
+    @Modifying
     @Query("delete from Relationship f " +
-            "where (f.userOne.email = :email and f.userTwo.id = :id) or (f.userTwo.email = :email and f.userOne.id = :id)")
-    void deleteByEmailAndId(@Param("email") final String email, @Param("id") final Long id);
+            "where (f.userOne.id = :id_1 and f.userTwo.id = :id_2) or (f.userOne.id = :id_2 and f.userTwo.id = :id_1)")
+    int deleteByUserIds(@Param("id_1") final Long idOne, @Param("id_2") final Long idTwo);
 }

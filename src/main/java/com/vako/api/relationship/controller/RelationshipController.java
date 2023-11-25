@@ -30,8 +30,8 @@ public class RelationshipController {
     }
 
     @GetMapping("/pending")
-    public ResponseEntity<List<User>> getPendingRequests(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
-        final List<User> pendingRequests = relationshipService.getPendingRequests(decodedToken.getEmail());
+    public ResponseEntity<List<BasicUserResponse>> getPendingRequests(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final List<BasicUserResponse> pendingRequests = relationshipService.getPendingRequests(decodedToken.getEmail());
         return ResponseEntity.ok(pendingRequests);
     }
 

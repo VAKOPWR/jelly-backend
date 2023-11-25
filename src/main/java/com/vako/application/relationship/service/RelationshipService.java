@@ -34,8 +34,11 @@ public class RelationshipService {
         final Relationship relationship = relationshipRepository.save(new Relationship(sender, recipient));
     }
 
+    @Transactional
     public void deleteFriendship(final String email, final Long id) {
-        relationshipRepository.deleteByEmailAndId(email, id);
+        final User deleter = userService.getUserByEmail(email);
+        final int deletes = relationshipRepository.deleteByUserIds(deleter.getId(), id);
+        if (deletes == 1) log.info("Deleted friendship for users with ID's {}, {}", deleter.getId(), id);
     }
 
     public List<User> getActiveFriends(final String email) {
@@ -48,10 +51,11 @@ public class RelationshipService {
                 .collect(Collectors.toList());
     }
 
-    public List<User> getPendingRequests(final String email) {
+    public List<BasicUserResponse> getPendingRequests(final String email) {
         final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByStatus(email, PENDING);
         return pendingRelationships.stream()
                 .map(Relationship::getUserOne)
+                .map(userMapper::userToBasicUserResponse)
                 .collect(Collectors.toList());
     }
 

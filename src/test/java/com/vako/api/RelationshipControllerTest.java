@@ -1,9 +1,11 @@
 package com.vako.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.vako.DbTestBase;
+import com.vako.api.user.response.BasicUserResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.model.User;
@@ -28,6 +30,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import static com.vako.application.relationship.model.RelationshipStatus.ACTIVE;
 import static com.vako.application.relationship.model.RelationshipStatus.PENDING;
@@ -131,5 +134,44 @@ public class RelationshipControllerTest extends DbTestBase {
         assertThat(relationship.getUserOne().getId()).isEqualTo(friendOne.getId());
         assertThat(relationship.getUserTwo().getId()).isEqualTo(friendTwo.getId());
         assertThat(relationship.getStatus()).isEqualTo(ACTIVE);
+    }
+
+    @Test
+    void shouldDeleteEntityInRelationshipWhenDeletingFriend() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete(API_PATH + "/friend/delete/" + friendOne.getId())
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<Relationship> relationship = relationshipRepository.findAll();
+        final List<User> users = userRepository.findAll();
+        assertThat(relationship).hasSize(0);
+        assertThat(users).hasSize(2);
+    }
+
+    @Test
+    void shouldReturnListOfBasicUserResponsesWhenGettingPendingRequests() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/friend/pending")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<BasicUserResponse> basicUserResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BasicUserResponse>>(){});
+        assertThat(basicUserResponses).hasSize(1);
+        assertThat(basicUserResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
+        assertThat(basicUserResponses.get(0).getIsOnline()).isFalse();
+        assertThat(basicUserResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
     }
 }
