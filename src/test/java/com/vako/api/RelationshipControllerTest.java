@@ -227,4 +227,23 @@ public class RelationshipControllerTest extends DbTestBase {
         assertThat(userStatusResponses.get(0).getPositionLon()).isEqualTo(lon);
         assertThat(userStatusResponses.get(0).getPositionLat()).isEqualTo(lat);
     }
+
+    @Test
+    void shouldReturnBasicUserResponsesWhenQueryingByNickName() throws Exception {
+        //given
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/friend/search/" + "or")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //when
+        final List<BasicUserResponse> basicUserResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BasicUserResponse>>(){});
+        assertThat(basicUserResponses).hasSize(1);
+        assertThat(basicUserResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
+        assertThat(basicUserResponses.get(0).getIsOnline()).isFalse();
+        assertThat(basicUserResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
+    }
 }

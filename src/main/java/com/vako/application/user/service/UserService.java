@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserService {
 
-    private static final int DEFAULT_PAGE_SIZE = 10;
+
 
     private final UserMapper userMapper;
 
@@ -67,10 +67,6 @@ public class UserService {
         if (updates == 1) log.info("Updated user status for user with email {}", email);
     }
 
-    public List<BasicUserResponse> usersWithNicknameLike(final String nickname, final Integer pageSize) {
-        final int pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
-        final List<User> users = userRepository.findAllByNicknameLike(nickname, PageRequest.of(0, pageSizeToUse));
-        return users.stream().map(userMapper::userToBasicUserResponse)
-                .toList();
-    }
+
+
 }

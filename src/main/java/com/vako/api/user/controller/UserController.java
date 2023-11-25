@@ -57,11 +57,7 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/search/{nickname}")
-    public ResponseEntity<List<BasicUserResponse>> getUsersWithNicknameLike(@PathVariable("nickname") final String nickname, @QueryParam("pagesize") final Integer pageSize) {
-        final List<BasicUserResponse> usersWithNicknameLike = userService.usersWithNicknameLike(nickname, pageSize);
-        return ResponseEntity.ok(usersWithNicknameLike);
-    }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<User> deleteUserById(

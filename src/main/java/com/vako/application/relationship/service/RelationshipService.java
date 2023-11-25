@@ -6,12 +6,15 @@ import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.mapper.UserMapper;
 import com.vako.application.user.model.User;
+import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,9 +25,13 @@ import static com.vako.application.relationship.model.RelationshipStatus.*;
 @Slf4j
 public class RelationshipService {
 
+    private static final int DEFAULT_PAGE_SIZE = 10;
+
     private final UserMapper userMapper;
 
     private final RelationshipRepository relationshipRepository;
+
+    private final UserRepository userRepository;
 
     private final UserService userService;
 
@@ -78,6 +85,15 @@ public class RelationshipService {
 
     public List<UserStatusResponse> getFriendStatuses(final String email) {
         return getActiveFriends(email).stream().map(userMapper::userToUserStatusResponse).toList();
+    }
+
+    public List<BasicUserResponse> usersWithNicknameLike(final String email, final String queriedNickname, final Integer pageSize) {
+        final int pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+        final String userName = userService.getUserByEmail(email).getNickname();
+        List<String> usernamesToExclude = new ArrayList<>(getActiveFriends(email).stream().map(User::getNickname).toList());
+        usernamesToExclude.add(userName);
+        final List<User> users = userRepository.findAllByNicknameLikeAndNicknameNotIn(queriedNickname, usernamesToExclude, PageRequest.of(0, pageSizeToUse));
+        return users.stream().map(userMapper::userToBasicUserResponse).toList();
     }
 
 }

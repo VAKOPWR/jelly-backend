@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.QueryParam;
 import java.util.List;
 
 @RestController
@@ -63,5 +64,11 @@ public class RelationshipController {
     public ResponseEntity<List<UserStatusResponse>> getFriendStatuses(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
         final List<UserStatusResponse> friendStatuses = relationshipService.getFriendStatuses(decodedToken.getEmail());
         return ResponseEntity.ok(friendStatuses);
+    }
+
+    @GetMapping("/search/{nickname}")
+    public ResponseEntity<List<BasicUserResponse>> getUsersWithNicknameLike(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("nickname") final String nickname, @QueryParam("pagesize") final Integer pageSize) {
+        final List<BasicUserResponse> usersWithNicknameLike = relationshipService.usersWithNicknameLike(decodedToken.getEmail(), nickname, pageSize);
+        return ResponseEntity.ok(usersWithNicknameLike);
     }
 }
