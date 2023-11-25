@@ -23,6 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.email = :identifier or u.nickname = :identifier")
     Optional<User> findByIdentifier(@Param("identifier") final String identifier);
 
-    List<User> findAllByNicknameLikeAndNicknameNotIn(final String nickname, final List<String> exclusions, Pageable pageable);
+    List<User> findAllByNicknameContainsAndNicknameNotIn(final String nickname, final List<String> exclusions, Pageable pageable);
 }
 
