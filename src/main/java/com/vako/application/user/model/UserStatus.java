@@ -57,7 +57,8 @@ public class UserStatus {
     }
 
     public Boolean getIsOnline(){
-        return ChronoUnit.MINUTES.between(timestamp, LocalDateTime.now()) < 5;
+        Boolean isOnline = timestamp != null && ChronoUnit.MINUTES.between(timestamp, LocalDateTime.now()) < 5;
+        return isOnline;
     }
 
     public String getLastOnline() {
