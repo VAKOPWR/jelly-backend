@@ -74,7 +74,7 @@ public class RelationshipController {
     }
 
     @GetMapping("/search/{nickname}")
-    public ResponseEntity<List<BasicUserResponse>> getUsersWithNicknameLike(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("nickname") final String nickname, @QueryParam("pagesize") final Integer pageSize) {
+    public ResponseEntity<List<BasicUserResponse>> getUsersWithNicknameLike(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("nickname") final String nickname, @QueryParam("pageSize") final Integer pageSize) {
         final List<BasicUserResponse> usersWithNicknameLike = relationshipService.usersWithNicknameLike(decodedToken.getEmail(), nickname, pageSize);
         return ResponseEntity.ok(usersWithNicknameLike);
     }

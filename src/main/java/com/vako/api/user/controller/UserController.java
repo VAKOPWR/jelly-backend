@@ -57,8 +57,6 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-
-
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<User> deleteUserById(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("id") final Long id) {

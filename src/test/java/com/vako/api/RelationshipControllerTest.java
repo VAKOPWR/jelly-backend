@@ -274,7 +274,7 @@ public class RelationshipControllerTest extends DbTestBase {
 
         //when
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .get(API_PATH + "/friend/search/" + "or")
+                        .get(API_PATH + "/friend/search/" + "or?pageSize=20")
                         .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
                 .andExpect(status().isOk())
                 .andReturn();
