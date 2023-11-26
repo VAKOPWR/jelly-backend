@@ -57,13 +57,13 @@ public class UserStatus {
     }
 
     public Boolean getIsOnline(){
-        return ChronoUnit.MINUTES.between(LocalDateTime.now(), timestamp) < 5;
+        return ChronoUnit.MINUTES.between(timestamp, LocalDateTime.now()) < 5;
     }
 
     public String getLastOnline() {
         ChronoUnit[] units = {ChronoUnit.YEARS, ChronoUnit.MONTHS, ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES};
         for (ChronoUnit unit : units) {
-            long difference = unit.between(LocalDateTime.now(), timestamp);
+            long difference = unit.between(timestamp, LocalDateTime.now());
             if (difference != 0) {
                 return "Last online " + -difference + " " + unit.toString().toLowerCase() + " ago";
             }

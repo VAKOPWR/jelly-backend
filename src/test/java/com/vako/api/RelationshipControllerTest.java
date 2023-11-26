@@ -35,8 +35,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-import static com.vako.application.relationship.model.RelationshipStatus.ACTIVE;
-import static com.vako.application.relationship.model.RelationshipStatus.PENDING;
+import static com.vako.application.relationship.model.RelationshipStatus.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -140,6 +139,25 @@ public class RelationshipControllerTest extends DbTestBase {
         assertThat(relationship.getUserOne().getId()).isEqualTo(friendOne.getId());
         assertThat(relationship.getUserTwo().getId()).isEqualTo(friendTwo.getId());
         assertThat(relationship.getStatus()).isEqualTo(ACTIVE);
+    }
+
+    @Test
+    void shouldUpdateEntityInRelationshipTableWithStatusActiveWhenDecliningRequest() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/friend/decline/" + friendOne.getId())
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final Relationship relationship = relationshipRepository.findAll().get(0);
+        assertThat(relationship.getUserOne().getId()).isEqualTo(friendOne.getId());
+        assertThat(relationship.getUserTwo().getId()).isEqualTo(friendTwo.getId());
+        assertThat(relationship.getStatus()).isEqualTo(DECLINED);
     }
 
     @Test

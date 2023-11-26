@@ -15,7 +15,7 @@ public class UserStatusTest {
     void shouldReturnIsOnlineFalseIfLastUpdatedGreaterThanFiveMinutes() {
         //given
         final UserStatus userStatus = new UserStatus(new User());
-        userStatus.setTimestamp(LocalDateTime.now().minusMinutes(5));
+        userStatus.setTimestamp(LocalDateTime.now().minusMinutes(6));
         //when
         final Boolean isOnline = userStatus.getIsOnline();
 

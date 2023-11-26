@@ -95,7 +95,7 @@ public class UserControllerTest extends DbTestBase {
         assertThat(user.getUserStatus().getIsOnline()).isTrue();
         assertThat(userStatus.getSpeed()).isEqualTo(0.0f);
         assertThat(userStatus.getBatteryLevel()).isEqualTo(0);
-        assertThat(userStatus.getIsOnline()).isFalse();
+        assertThat(userStatus.getIsOnline()).isTrue();
     }
 
     @Test
