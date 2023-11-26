@@ -99,6 +99,7 @@ public class RelationshipService {
         List<String> usernamesToExclude = new ArrayList<>(getActiveFriends(email).stream().map(User::getNickname).toList());
         usernamesToExclude.add(userName);
         final List<User> users = userRepository.findAllByNicknameContainsAndNicknameNotIn(queriedNickname, usernamesToExclude, PageRequest.of(0, pageSizeToUse));
+        log.info("Found {} users with nickname containing {}", users.size(), queriedNickname);
         return users.stream().map(userMapper::userToBasicUserResponse).toList();
     }
 

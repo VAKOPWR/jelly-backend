@@ -7,6 +7,7 @@ import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.service.RelationshipService;
 import com.vako.application.user.model.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/friend")
 @AllArgsConstructor
+@Slf4j
 public class RelationshipController {
 
     private final RelationshipService relationshipService;
@@ -75,6 +77,7 @@ public class RelationshipController {
 
     @GetMapping("/search/{nickname}")
     public ResponseEntity<List<BasicUserResponse>> getUsersWithNicknameLike(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("nickname") final String nickname, @QueryParam("pageSize") final Integer pageSize) {
+        log.info("Received request to find usernames containing {}", nickname);
         final List<BasicUserResponse> usersWithNicknameLike = relationshipService.usersWithNicknameLike(decodedToken.getEmail(), nickname, pageSize);
         return ResponseEntity.ok(usersWithNicknameLike);
     }
