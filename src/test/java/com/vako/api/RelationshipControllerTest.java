@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.vako.DbTestBase;
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
@@ -176,7 +177,7 @@ public class RelationshipControllerTest extends DbTestBase {
         final List<BasicUserResponse> basicUserResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BasicUserResponse>>(){});
         assertThat(basicUserResponses).hasSize(1);
         assertThat(basicUserResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
-        assertThat(basicUserResponses.get(0).getIsOnline()).isFalse();
+        assertThat(basicUserResponses.get(0).getIsOnline()).isTrue();
         assertThat(basicUserResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
     }
 
@@ -197,8 +198,29 @@ public class RelationshipControllerTest extends DbTestBase {
         final List<BasicUserResponse> basicUserResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BasicUserResponse>>(){});
         assertThat(basicUserResponses).hasSize(1);
         assertThat(basicUserResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
-        assertThat(basicUserResponses.get(0).getIsOnline()).isFalse();
+        assertThat(basicUserResponses.get(0).getIsOnline()).isTrue();
         assertThat(basicUserResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
+    }
+
+    @Test
+    void shouldReturnListOfOnlineUserResponsesWhenGettingBasicFriendInfo() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/friend/online")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<UserOnlineResponse> userOnlineResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<UserOnlineResponse>>(){});
+        assertThat(userOnlineResponses).hasSize(1);
+        assertThat(userOnlineResponses.get(0).getIsOnline()).isTrue();
+        assertThat(userOnlineResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
+        assertThat(userOnlineResponses.get(0).getLastOnline()).isNotEmpty();
     }
 
 
@@ -243,7 +265,7 @@ public class RelationshipControllerTest extends DbTestBase {
         final List<BasicUserResponse> basicUserResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<BasicUserResponse>>(){});
         assertThat(basicUserResponses).hasSize(1);
         assertThat(basicUserResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
-        assertThat(basicUserResponses.get(0).getIsOnline()).isFalse();
+        assertThat(basicUserResponses.get(0).getIsOnline()).isTrue();
         assertThat(basicUserResponses.get(0).getProfilePicture()).isEqualTo(friendOne.getProfilePicture());
     }
 }

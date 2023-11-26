@@ -3,9 +3,11 @@ package com.vako.application.user.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 @Entity
 @Data
@@ -39,6 +41,7 @@ public class UserStatus {
     private Boolean isOnline = false;
 
     @Column(name = "timestamp")
+    @UpdateTimestamp
     private LocalDateTime timestamp;
 
     @OneToOne(cascade = CascadeType.PERSIST)
@@ -51,5 +54,20 @@ public class UserStatus {
 
     public UserStatus() {
 
+    }
+
+    public Boolean getIsOnline(){
+        return ChronoUnit.MINUTES.between(LocalDateTime.now(), timestamp) < 5;
+    }
+
+    public String getLastOnline() {
+        ChronoUnit[] units = {ChronoUnit.YEARS, ChronoUnit.MONTHS, ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES};
+        for (ChronoUnit unit : units) {
+            long difference = unit.between(LocalDateTime.now(), timestamp);
+            if (difference != 0) {
+                return "Last online " + -difference + " " + unit.toString().toLowerCase() + " ago";
+            }
+        }
+        return "Online";
     }
 }

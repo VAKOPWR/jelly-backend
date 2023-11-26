@@ -2,6 +2,7 @@ package com.vako.api.relationship.controller;
 
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.service.RelationshipService;
 import com.vako.application.user.model.User;
@@ -40,6 +41,12 @@ public class RelationshipController {
     public ResponseEntity<List<User>> getActiveFriends(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
         final List<User> activeFriends = relationshipService.getActiveFriends(decodedToken.getEmail());
         return ResponseEntity.ok(activeFriends);
+    }
+
+    @GetMapping("/online")
+    public ResponseEntity<List<UserOnlineResponse>> getFriendsActivity(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final List<UserOnlineResponse> friendsActivity = relationshipService.getFriendsWithTheirActivityStatuses(decodedToken.getEmail());
+        return ResponseEntity.ok(friendsActivity);
     }
 
     @PutMapping("/accept/{id}")

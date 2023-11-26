@@ -92,7 +92,7 @@ public class UserControllerTest extends DbTestBase {
         assertThat(user.getStealthChoice()).isEqualTo(PRECISE);
         assertThat(user.getUserStatus().getSpeed()).isEqualTo(0.0f);
         assertThat(user.getUserStatus().getBatteryLevel()).isEqualTo(0);
-        assertThat(user.getUserStatus().getIsOnline()).isFalse();
+        assertThat(user.getUserStatus().getIsOnline()).isTrue();
         assertThat(userStatus.getSpeed()).isEqualTo(0.0f);
         assertThat(userStatus.getBatteryLevel()).isEqualTo(0);
         assertThat(userStatus.getIsOnline()).isFalse();
@@ -135,7 +135,7 @@ public class UserControllerTest extends DbTestBase {
         final BasicUserResponse basicUserResponse = mapper.readValue(result.getResponse().getContentAsString(), BasicUserResponse.class);
         assertThat(basicUserResponse.getNickname()).isEqualTo("oresto101");
         assertThat(basicUserResponse.getProfilePicture()).isNotEmpty();
-        assertThat(basicUserResponse.getIsOnline()).isFalse();
+        assertThat(basicUserResponse.getIsOnline()).isTrue();
     }
 
 

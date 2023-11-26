@@ -1,6 +1,7 @@
 package com.vako.application.relationship.service;
 
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
@@ -56,6 +57,11 @@ public class RelationshipService {
                     else return relationship.getUserOne();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<UserOnlineResponse> getFriendsWithTheirActivityStatuses(final String email) {
+        final List<UserOnlineResponse> userOnlineResponses = getActiveFriends(email).stream().map(userMapper::userToUserOnlineResponse).toList();
+        return userOnlineResponses;
     }
 
     public List<BasicUserResponse> getPendingRequests(final String email) {
