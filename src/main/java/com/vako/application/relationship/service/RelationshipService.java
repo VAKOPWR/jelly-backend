@@ -9,6 +9,8 @@ import com.vako.application.user.mapper.UserMapper;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.service.UserService;
+import com.vako.exception.JellyException;
+import com.vako.exception.JellyExceptionType;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +38,12 @@ public class RelationshipService {
 
     private final UserService userService;
 
+
+    @Transactional
     public void sendFriendRequest(final String senderNickname, final Long id) {
         final User sender = userService.getUserByIdentifier(senderNickname);
+        if (relationshipRepository.getRelationshipByUserIds(sender.getId(), id).isPresent())
+            throw new JellyException(JellyExceptionType.RELATIONSHIP_ALREADY_EXISTS);
         final User recipient = userService.getUserById(id);
         final Relationship relationship = relationshipRepository.save(new Relationship(sender, recipient));
     }
@@ -67,9 +73,12 @@ public class RelationshipService {
     public List<BasicUserResponse> getPendingRequests(final String email) {
         final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByStatus(email, PENDING);
         return pendingRelationships.stream()
-                .map(Relationship::getUserOne)
+                .map(relationship -> {
+                    if (relationship.getUserOne().getEmail().equals(email)) return relationship.getUserTwo();
+                    else return relationship.getUserOne();
+                })
                 .map(userMapper::userToBasicUserResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Transactional

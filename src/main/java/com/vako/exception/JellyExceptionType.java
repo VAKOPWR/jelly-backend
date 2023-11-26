@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum JellyExceptionType {
     INTERNAL("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
-    NOT_AUTHORIZED("Not logged in", HttpStatus.FORBIDDEN);
+    NOT_AUTHORIZED("Not logged in", HttpStatus.FORBIDDEN),
+    RELATIONSHIP_ALREADY_EXISTS("Relationships for given users already exists", HttpStatus.BAD_REQUEST);
 
     private final String code;
     private final String description;
