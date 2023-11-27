@@ -140,5 +140,22 @@ public class UserControllerTest extends DbTestBase {
         assertThat(basicUserResponse.getIsOnline()).isTrue();
     }
 
+    @Test
+    void shouldUpdateUserShakingStatus() throws Exception {
+        //given
+        var shakingStatus = true;
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/shaking/update/" + shakingStatus)
+                        .header(HttpHeaders.AUTHORIZATION, idToken))
+                        .andExpect(status().isOk())
+                        .andReturn();
+
+        //when
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getUserStatus().getIsShaking()).isEqualTo(true);
+    }
+
 
 }

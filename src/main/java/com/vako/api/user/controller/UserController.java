@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.util.List;
 
@@ -61,6 +60,22 @@ public class UserController {
     public ResponseEntity<User> deleteUserById(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("id") final Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<List<BasicUserResponse>> getNearbyUsers(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final List<BasicUserResponse> nearbyUsers = userService.findUsersNearLocation(decodedToken.getEmail());
+        return ResponseEntity.ok(nearbyUsers);
+    }
+
+    @PutMapping("/shaking/update/{isShaking}")
+    public ResponseEntity<List<BasicUserResponse>> updateShakingStatus(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+            @PathVariable("isShaking") final Boolean shakingStatus
+    ) {
+        userService.updateShakingStatus(decodedToken.getEmail(), shakingStatus);
         return ResponseEntity.ok().build();
     }
 }

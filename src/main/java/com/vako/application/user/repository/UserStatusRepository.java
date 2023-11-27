@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Repository
 public interface UserStatusRepository extends JpaRepository<UserStatus, Long> {
@@ -18,4 +19,11 @@ public interface UserStatusRepository extends JpaRepository<UserStatus, Long> {
     @Query("update UserStatus us set us.positionLon = :longitude, us.positionLat = :latitude, us.speed = :speed, us.batteryLevel = :batteryLevel WHERE us.user.id = :id ")
     int updateLocation(@Param("id") Long id, @Param("longitude") BigDecimal longitude, @Param("latitude") BigDecimal latitude, @Param("speed") float speed, @Param("batteryLevel") int batteryLevel);
 
+    @Query("SELECT us FROM UserStatus us WHERE us.isShaking = true and us.user.id != :id ")
+    List<UserStatus> findAllUsersWhoAreShaking(@Param("id") Long id);
+
+    @Modifying(flushAutomatically = true)
+    @Transactional
+    @Query("update UserStatus us set us.isShaking = :isShaking WHERE us.user.id = :id ")
+    int updateIsShaking(@Param("id") Long id, @Param("isShaking") Boolean isShaking);
 }
