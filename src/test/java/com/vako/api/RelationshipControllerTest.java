@@ -300,7 +300,6 @@ public class RelationshipControllerTest extends DbTestBase {
         var speed2 = 23;
         userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, speed1);
         userStatusRepository.updateIsShaking(friendOne.getId(), true);
-        userStatusRepository.updateIsShaking(friendOne.getId(), true);
         userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, speed2);
         userStatusRepository.updateIsShaking(friendTwo.getId(), true);
 
