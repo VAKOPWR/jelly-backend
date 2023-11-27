@@ -22,6 +22,7 @@ public interface UserMapper {
     @Mapping(source = "userStatus.positionLat", target = "positionLat")
     @Mapping(source = "userStatus.speed", target = "speed")
     @Mapping(source = "userStatus.batteryLevel", target = "batteryLevel")
+    @Mapping(source = "nickname", target = "nickname")
     UserStatusResponse userToUserStatusResponse(User user);
 
     @Mapping(source = "userStatus.isOnline", target = "isOnline")

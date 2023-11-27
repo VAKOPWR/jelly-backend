@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 public class UserStatusResponse {
 
     private Long id;
+    private String nickname;
     private BigDecimal positionLat;
     private BigDecimal positionLon;
     private float speed;

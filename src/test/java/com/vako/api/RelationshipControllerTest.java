@@ -263,6 +263,7 @@ public class RelationshipControllerTest extends DbTestBase {
         final List<UserStatusResponse> userStatusResponses = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<UserStatusResponse>>(){});
         assertThat(userStatusResponses).hasSize(1);
         assertThat(userStatusResponses.get(0).getId()).isEqualTo(friendOne.getId());
+        assertThat(userStatusResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
         assertThat(userStatusResponses.get(0).getSpeed()).isEqualTo(speed);
         assertThat(userStatusResponses.get(0).getPositionLon()).isEqualTo(lon);
         assertThat(userStatusResponses.get(0).getPositionLat()).isEqualTo(lat);
