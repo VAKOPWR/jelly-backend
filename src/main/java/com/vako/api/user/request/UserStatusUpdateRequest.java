@@ -13,4 +13,5 @@ public class UserStatusUpdateRequest {
     private BigDecimal longitude;
     private BigDecimal latitude;
     private float speed;
+    private int batteryLevel;
 }

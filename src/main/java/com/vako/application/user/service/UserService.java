@@ -21,8 +21,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserService {
 
-
-
     private final UserMapper userMapper;
 
     private final UserRepository userRepository;
@@ -63,7 +61,7 @@ public class UserService {
     @Transactional
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
-        final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getSpeed());
+        final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getSpeed(), userStatusUpdateRequest.getBatteryLevel());
         if (updates == 1) log.info("Updated user status for user with email {}", email);
     }
 

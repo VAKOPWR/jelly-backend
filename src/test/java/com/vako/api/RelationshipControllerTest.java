@@ -248,9 +248,10 @@ public class RelationshipControllerTest extends DbTestBase {
         var lon = BigDecimal.valueOf(2.5);
         var lat = BigDecimal.valueOf(6.5);
         var speed = 23;
+        var battery = 32;
         relationshipRepository.save(new Relationship(friendOne, friendTwo));
         relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
-        userStatusRepository.updateLocation(friendOne.getId(), lon, lat, 23);
+        userStatusRepository.updateLocation(friendOne.getId(), lon, lat, speed, battery);
 
         //when
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
@@ -265,6 +266,7 @@ public class RelationshipControllerTest extends DbTestBase {
         assertThat(userStatusResponses.get(0).getId()).isEqualTo(friendOne.getId());
         assertThat(userStatusResponses.get(0).getNickname()).isEqualTo(friendOne.getNickname());
         assertThat(userStatusResponses.get(0).getSpeed()).isEqualTo(speed);
+        assertThat(userStatusResponses.get(0).getBatteryLevel()).isEqualTo(battery);
         assertThat(userStatusResponses.get(0).getPositionLon()).isEqualTo(lon);
         assertThat(userStatusResponses.get(0).getPositionLat()).isEqualTo(lat);
     }

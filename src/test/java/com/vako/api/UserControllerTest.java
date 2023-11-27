@@ -103,7 +103,8 @@ public class UserControllerTest extends DbTestBase {
         //given
         var lon = BigDecimal.valueOf(2.5);
         var lat = BigDecimal.valueOf(6.5);
-        final UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(lon, lat, 23);
+        var battery = 32;
+        final UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(lon, lat, 23, battery);
 
         //when
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
@@ -117,6 +118,7 @@ public class UserControllerTest extends DbTestBase {
         final User user = userRepository.findAll().get(0);
         assertThat(user.getUserStatus().getPositionLon()).isEqualTo(lon);
         assertThat(user.getUserStatus().getPositionLat()).isEqualTo(lat);
+        assertThat(user.getUserStatus().getBatteryLevel()).isEqualTo(battery);
         assertThat(user.getUserStatus().getSpeed()).isEqualTo(23);
     }
 
