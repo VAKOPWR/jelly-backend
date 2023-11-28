@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @PutMapping("/shaking/update/{isShaking}")
-    public ResponseEntity<List<BasicUserResponse>> updateShakingStatus(
+    public ResponseEntity<Void> updateShakingStatus(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
             @PathVariable("isShaking") final Boolean shakingStatus
     ) {
