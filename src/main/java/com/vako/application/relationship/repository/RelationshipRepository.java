@@ -34,7 +34,7 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
     @Transactional
     @Query("update Relationship f " +
             "set f.stealthChoiceUserTwo = :stealthChoiceUserTwo WHERE f.userTwo.id= :userTwoId and f.userOne.id = :userOneId")
-    int updateStealthChoiceUserTwo(@Param("userTwoId") final Long userTwoId, @Param("userOneId") final Long userOneId, @Param("stealthChoiceUserTwo") final StealthChoice stealthChoiceUserTwo);
+    int updateStealthChoiceUserTwo(@Param("userTwoId") final Long userTwoId, @Param("userOneId") final Long userOneId, @Param("stealthChoiceUserTwo") StealthChoice stealthChoiceUserTwo);
 
     @Modifying
     @Query("delete from Relationship f " +
