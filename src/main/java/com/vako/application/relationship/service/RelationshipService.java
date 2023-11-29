@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -145,7 +146,13 @@ public class RelationshipService {
         StealthChoice stealthChoice = isRequesterUserOne ? relationship.getStealthChoiceUserOne() : relationship.getStealthChoiceUserTwo();
 
         if (stealthChoice == StealthChoice.HIDE || friend.getStealthChoice().equals(StealthChoice.HIDE)) {
-            return new UserStatusResponse(friend.getId());
+            return UserStatusResponse.builder()
+                    .id(friend.getId())
+                    .positionLat(BigDecimal.ZERO)
+                    .positionLon(BigDecimal.ZERO)
+                    .speed(0)
+                    .batteryLevel(0)
+                    .build();
         } else {
             return userMapper.userToUserStatusResponse(friend);
         }

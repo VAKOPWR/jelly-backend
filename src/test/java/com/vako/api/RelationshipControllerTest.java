@@ -10,6 +10,7 @@ import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.repository.UserStatusRepository;
@@ -314,5 +315,52 @@ public class RelationshipControllerTest extends DbTestBase {
         final List<BasicUserResponse> nearbyUsers = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
         assertThat(nearbyUsers).hasSize(1);
         assertThat(nearbyUsers.get(0).getId()).isEqualTo(friendOne.getId());
+    }
+
+    @Test
+    void shouldUpdateStealthChoiceForUserTwoInRelationship() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
+        final StealthChoice stealthChoiceForUserTwo = StealthChoice.HIDE;
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/friend/ghost/update/" + friendOne.getId() + "/" + stealthChoiceForUserTwo)
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        Relationship relationship = relationshipRepository.getRelationshipByUserIds(friendOne.getId(), friendTwo.getId());
+        assertThat(relationship.getStealthChoiceUserTwo()).isEqualTo(StealthChoice.HIDE);
+        assertThat(relationship.getStealthChoiceUserOne()).isEqualTo(StealthChoice.PRECISE);
+    }
+
+    @Test
+    void shouldReturnListOfActiveFriends() throws Exception {
+        //given
+        var lon1 = BigDecimal.valueOf(2.5);
+        var lat1 = BigDecimal.valueOf(6.5);
+
+        var lon2 = BigDecimal.valueOf(2.5);
+        var lat2 = BigDecimal.valueOf(6.5);
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
+        userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, 23);
+        userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, 23);
+
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/friend/statuses")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<UserStatusResponse> friends = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        assertThat(friends).hasSize(1);
+        assertThat(friends.get(0).getId()).isEqualTo(friendOne.getId());
     }
 }
