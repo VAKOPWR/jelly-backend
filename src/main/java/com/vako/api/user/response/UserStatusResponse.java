@@ -1,11 +1,9 @@
 package com.vako.api.user.response;
 
-import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Builder
 @Data
 public class UserStatusResponse {
 
@@ -16,4 +14,11 @@ public class UserStatusResponse {
     private float speed;
     private int batteryLevel;
 
+    public UserStatusResponse(Long id) {
+        this.id = id;
+        this.positionLat = BigDecimal.ZERO;
+        this.positionLon = BigDecimal.ZERO;
+        this.speed = 0.0f;
+        this.batteryLevel = 0;
+    }
 }

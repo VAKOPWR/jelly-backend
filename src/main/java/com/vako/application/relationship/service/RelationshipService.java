@@ -6,6 +6,8 @@ import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.mapper.UserMapper;
+import com.vako.application.user.model.StealthChoice;
+import com.vako.application.user.model.StealthChoiceUpdater;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.service.UserService;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.vako.application.relationship.model.RelationshipStatus.*;
@@ -98,10 +101,6 @@ public class RelationshipService {
         return getActiveFriends(email).stream().map(userMapper::userToBasicUserResponse).toList();
     }
 
-    public List<UserStatusResponse> getFriendStatuses(final String email) {
-        return getActiveFriends(email).stream().map(userMapper::userToUserStatusResponse).toList();
-    }
-
     public List<BasicUserResponse> usersWithNicknameLike(final String email, final String queriedNickname, final Integer pageSize) {
         final int pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
         final String userName = userService.getUserByEmail(email).getNickname();
@@ -112,4 +111,43 @@ public class RelationshipService {
         return users.stream().map(userMapper::userToBasicUserResponse).toList();
     }
 
+    @Transactional
+    public void updateStealthChoice(String email, final Long id, StealthChoice stealthChoice) {
+        final User updater = userService.getUserByEmail(email);
+        Relationship relationship = relationshipRepository.getRelationshipByUserIds(updater.getId(), id);
+
+        StealthChoiceUpdater updaterMethod = updater.getId().equals(relationship.getUserOne().getId()) ?
+                relationshipRepository::updateStealthChoiceUserOne :
+                relationshipRepository::updateStealthChoiceUserTwo;
+
+
+        int updated = updaterMethod.update(updater.getId(), id, stealthChoice);
+
+        if (updated == 1)
+            log.info("Set users with ids: {}, {} to StealthChoice: {}", updater.getId(), id, stealthChoice);
+    }
+
+    public List<UserStatusResponse> getFriendStatuses(final String email) {
+        final User requester = userService.getUserByEmail(email);
+        return getActiveFriends(email).stream()
+                .map(user -> createStatusResponseBasedOnStealthChoice(requester, user))
+                .collect(Collectors.toList());
+    }
+
+    private UserStatusResponse createStatusResponseBasedOnStealthChoice(User requester, User friend) {
+        return Optional.ofNullable(relationshipRepository.getRelationshipByUserIds(requester.getId(), friend.getId()))
+                .map(relationship -> determineResponseBasedOnStealth(relationship, requester, friend))
+                .orElseGet(() -> userMapper.userToUserStatusResponse(friend));
+    }
+
+    private UserStatusResponse determineResponseBasedOnStealth(Relationship relationship, User requester, User friend) {
+        boolean isRequesterUserOne = relationship.getUserOne().getId().equals(requester.getId());
+        StealthChoice stealthChoice = isRequesterUserOne ? relationship.getStealthChoiceUserOne() : relationship.getStealthChoiceUserTwo();
+
+        if (stealthChoice == StealthChoice.HIDE || friend.getStealthChoice().equals(StealthChoice.HIDE)) {
+            return new UserStatusResponse(friend.getId());
+        } else {
+            return userMapper.userToUserStatusResponse(friend);
+        }
+    }
 }

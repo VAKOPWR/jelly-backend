@@ -2,6 +2,7 @@ package com.vako.application.relationship.repository;
 
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.model.RelationshipStatus;
+import com.vako.application.user.model.StealthChoice;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,9 +24,17 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
             "set f.status = :newStatus WHERE f.userOne.id= :userOneId and f.userTwo.id = :userTwoId ")
     int updateStatus(@Param("userOneId") final Long userOneId, @Param("userTwoId") final Long userTwoId, @Param("newStatus") final RelationshipStatus newStatus);
 
-//    @Query("select f from Relationship f " +
-//            "WHERE f.userOne.id= :userOneId and f.userTwo.id = :userTwoId")
-//    Optional<Relationship> getRelationshipByUserIds(@Param("userOneId") final Long userOneId, @Param("userTwoId") final Long userTwoId);
+    @Modifying
+    @Transactional
+    @Query("update Relationship f " +
+            "set f.stealthChoiceUserOne = :stealthChoiceUserOne WHERE f.userOne.id= :userOneId and f.userTwo.id = :userTwoId")
+    int updateStealthChoiceUserOne(@Param("userOneId") final Long userOneId, @Param("userTwoId") final Long userTwoId, @Param("stealthChoiceUserOne") StealthChoice stealthChoiceUserOne);
+
+    @Modifying
+    @Transactional
+    @Query("update Relationship f " +
+            "set f.stealthChoiceUserTwo = :stealthChoiceUserTwo WHERE f.userTwo.id= :userTwoId and f.userOne.id = :userOneId")
+    int updateStealthChoiceUserTwo(@Param("userTwoId") final Long userTwoId, @Param("userOneId") final Long userOneId, @Param("stealthChoiceUserTwo") final StealthChoice stealthChoiceUserTwo);
 
     @Modifying
     @Query("delete from Relationship f " +

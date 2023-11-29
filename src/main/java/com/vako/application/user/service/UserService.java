@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
 import com.vako.application.user.mapper.UserMapper;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.model.UserStatus;
 import com.vako.application.user.repository.UserRepository;
@@ -89,6 +90,13 @@ public class UserService {
         final User user = getUserByEmail(email);
         final int updates = userStatusRepository.updateIsShaking(user.getId(), shakingStatus);
         if (updates == 1) log.info("Updated user shaking status for user with email {}", email);
+    }
+
+    @Transactional
+    public void updateStealthChoice(String email, StealthChoice stealthChoice) {
+        final User user = getUserByEmail(email);
+        final int updates = userRepository.updateStealthChoice(user.getId(), stealthChoice);
+        if (updates == 1) log.info("Updated user stealth status for user with email {}", email);
     }
 
     private double calculateDistance(BigDecimal lat1, BigDecimal lon1, BigDecimal lat2, BigDecimal lon2) {

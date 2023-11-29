@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
 import com.vako.application.image.BlobStorageService;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
 import lombok.AllArgsConstructor;
@@ -76,6 +77,15 @@ public class UserController {
             @PathVariable("isShaking") final Boolean shakingStatus
     ) {
         userService.updateShakingStatus(decodedToken.getEmail(), shakingStatus);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/ghost/update/{stealthChoice}")
+    public ResponseEntity<Void> updateStealthChoice(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+            @PathVariable("stealthChoice") final StealthChoice stealthChoice
+    ) {
+        userService.updateStealthChoice(decodedToken.getEmail(), stealthChoice);
         return ResponseEntity.ok().build();
     }
 }
