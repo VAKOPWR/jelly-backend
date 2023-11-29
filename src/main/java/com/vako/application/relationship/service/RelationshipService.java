@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.vako.application.relationship.model.RelationshipStatus.*;
@@ -49,7 +48,7 @@ public class RelationshipService {
         if (relationshipRepository.getRelationshipByUserIds(sender.getId(), id).isPresent())
             throw new JellyException(JellyExceptionType.RELATIONSHIP_ALREADY_EXISTS);
         final User recipient = userService.getUserById(id);
-        final Relationship relationship = relationshipRepository.save(new Relationship(sender, recipient));
+        relationshipRepository.save(new Relationship(sender, recipient));
     }
 
     @Transactional
@@ -70,8 +69,7 @@ public class RelationshipService {
     }
 
     public List<UserOnlineResponse> getFriendsWithTheirActivityStatuses(final String email) {
-        final List<UserOnlineResponse> userOnlineResponses = getActiveFriends(email).stream().map(userMapper::userToUserOnlineResponse).toList();
-        return userOnlineResponses;
+        return getActiveFriends(email).stream().map(userMapper::userToUserOnlineResponse).toList();
     }
 
     public List<BasicUserResponse> getPendingRequests(final String email) {
@@ -148,6 +146,7 @@ public class RelationshipService {
         if (stealthChoice == StealthChoice.HIDE || friend.getStealthChoice().equals(StealthChoice.HIDE)) {
             return UserStatusResponse.builder()
                     .id(friend.getId())
+                    .nickname(friend.getNickname())
                     .positionLat(BigDecimal.ZERO)
                     .positionLon(BigDecimal.ZERO)
                     .speed(0)

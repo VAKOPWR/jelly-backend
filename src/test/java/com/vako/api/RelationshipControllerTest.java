@@ -326,7 +326,7 @@ public class RelationshipControllerTest extends DbTestBase {
         final StealthChoice stealthChoiceForUserTwo = StealthChoice.HIDE;
 
         //when
-        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+        mockMvc.perform(MockMvcRequestBuilders
                         .put(API_PATH + "/friend/ghost/update/" + friendOne.getId() + "/" + stealthChoiceForUserTwo)
                         .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
                 .andExpect(status().isOk())
@@ -385,6 +385,7 @@ public class RelationshipControllerTest extends DbTestBase {
         final List<UserStatusResponse> friends = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
         assertThat(friends).hasSize(1);
         assertThat(friends.get(0).getId()).isEqualTo(friendOne.getId());
+        assertThat(friends.get(0).getNickname()).isEqualTo(friendOne.getNickname());
         assertThat(friends.get(0).getPositionLon()).isEqualTo(BigDecimal.ZERO);
         assertThat(friends.get(0).getPositionLat()).isEqualTo(BigDecimal.ZERO);
         assertThat(friends.get(0).getSpeed()).isEqualTo(0.0f);
@@ -418,6 +419,7 @@ public class RelationshipControllerTest extends DbTestBase {
         final List<UserStatusResponse> friends = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
         assertThat(friends).hasSize(1);
         assertThat(friends.get(0).getId()).isEqualTo(friendOne.getId());
+        assertThat(friends.get(0).getNickname()).isEqualTo(friendOne.getNickname());
         assertThat(friends.get(0).getPositionLon()).isEqualTo(BigDecimal.ZERO);
         assertThat(friends.get(0).getPositionLat()).isEqualTo(BigDecimal.ZERO);
         assertThat(friends.get(0).getSpeed()).isEqualTo(0.0f);
