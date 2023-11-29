@@ -115,7 +115,7 @@ public class RelationshipService {
     @Transactional
     public void updateStealthChoice(String email, final Long id, StealthChoice stealthChoice) {
         final User updater = userService.getUserByEmail(email);
-        Relationship relationship = relationshipRepository.getRelationshipByUserIds(updater.getId(), id);
+        Relationship relationship = relationshipRepository.getRelationshipByUserIds(updater.getId(), id).orElseThrow();
 
         StealthChoiceUpdater updaterMethod = updater.getId().equals(relationship.getUserOne().getId()) ?
                 relationshipRepository::updateStealthChoiceUserOne :
@@ -136,14 +136,14 @@ public class RelationshipService {
     }
 
     private UserStatusResponse createStatusResponseBasedOnStealthChoice(User requester, User friend) {
-        return Optional.ofNullable(relationshipRepository.getRelationshipByUserIds(requester.getId(), friend.getId()))
-                .map(relationship -> determineResponseBasedOnStealth(relationship, requester, friend))
-                .orElseGet(() -> userMapper.userToUserStatusResponse(friend));
+        Relationship relationship = relationshipRepository.getRelationshipByUserIds(requester.getId(), friend.getId()).orElseThrow();
+        return determineResponseBasedOnStealth(relationship, requester, friend);
     }
+
 
     private UserStatusResponse determineResponseBasedOnStealth(Relationship relationship, User requester, User friend) {
         boolean isRequesterUserOne = relationship.getUserOne().getId().equals(requester.getId());
-        StealthChoice stealthChoice = isRequesterUserOne ? relationship.getStealthChoiceUserOne() : relationship.getStealthChoiceUserTwo();
+        StealthChoice stealthChoice = isRequesterUserOne ? relationship.getStealthChoiceUserTwo() : relationship.getStealthChoiceUserOne();
 
         if (stealthChoice == StealthChoice.HIDE || friend.getStealthChoice().equals(StealthChoice.HIDE)) {
             return UserStatusResponse.builder()
