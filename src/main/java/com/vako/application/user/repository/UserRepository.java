@@ -1,5 +1,6 @@
 package com.vako.application.user.repository;
 
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +22,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select u from User u where u.email = :identifier or u.nickname = :identifier")
     Optional<User> findByIdentifier(@Param("identifier") final String identifier);
+
+    @Modifying(flushAutomatically = true)
+    @Transactional
+    @Query("update User u set u.stealthChoice = :stealthChoice WHERE u.id = :id ")
+    int updateStealthChoice(@Param("id") Long id, @Param("stealthChoice") StealthChoice stealthChoice);
 
     List<User> findAllByNicknameContainsAndNicknameNotIn(final String nickname, final List<String> exclusions, Pageable pageable);
 }

@@ -4,6 +4,7 @@ import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
 import com.vako.application.image.BlobStorageService;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.util.List;
 
@@ -61,6 +61,31 @@ public class UserController {
     public ResponseEntity<User> deleteUserById(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("id") final Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/nearby")
+    public ResponseEntity<List<BasicUserResponse>> getNearbyUsers(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final List<BasicUserResponse> nearbyUsers = userService.findUsersNearLocation(decodedToken.getEmail());
+        return ResponseEntity.ok(nearbyUsers);
+    }
+
+    @PutMapping("/shaking/update/{isShaking}")
+    public ResponseEntity<Void> updateShakingStatus(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+            @PathVariable("isShaking") final Boolean shakingStatus
+    ) {
+        userService.updateShakingStatus(decodedToken.getEmail(), shakingStatus);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/ghost/update/{stealthChoice}")
+    public ResponseEntity<Void> updateStealthChoice(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+            @PathVariable("stealthChoice") final StealthChoice stealthChoice
+    ) {
+        userService.updateStealthChoice(decodedToken.getEmail(), stealthChoice);
         return ResponseEntity.ok().build();
     }
 }

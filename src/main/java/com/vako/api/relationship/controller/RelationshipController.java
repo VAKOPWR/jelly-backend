@@ -5,6 +5,7 @@ import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.relationship.service.RelationshipService;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,5 +81,11 @@ public class RelationshipController {
         log.info("Received request to find usernames containing {}", nickname);
         final List<BasicUserResponse> usersWithNicknameLike = relationshipService.usersWithNicknameLike(decodedToken.getEmail(), nickname, pageSize);
         return ResponseEntity.ok(usersWithNicknameLike);
+    }
+
+    @PutMapping("/ghost/update/{id}/{stealthChoice}")
+    public ResponseEntity<Void> updateStealthChoice(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("id") final Long id, @PathVariable("stealthChoice") final StealthChoice stealthChoice) {
+        relationshipService.updateStealthChoice(decodedToken.getEmail(), id, stealthChoice);
+        return ResponseEntity.ok().build();
     }
 }
