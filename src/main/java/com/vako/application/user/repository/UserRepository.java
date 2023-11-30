@@ -1,5 +1,6 @@
 package com.vako.application.user.repository;
 
+import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import jakarta.transaction.Transactional;
@@ -44,5 +45,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     int updateNickname(@Param("email") String email, @Param("nickname") String nickname);
 
     List<User> findAllByNicknameContainsAndNicknameNotIn(final String nickname, final List<String> exclusions, Pageable pageable);
+
+    List<User> findByGroupUsersIn(List<GroupUser> groupUserNotConnected);
 }
 
