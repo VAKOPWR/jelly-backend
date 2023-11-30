@@ -41,7 +41,6 @@ public class UserStatus {
     private Boolean isOnline = false;
 
     @Column(name = "timestamp")
-    @UpdateTimestamp
     private LocalDateTime timestamp;
 
     @OneToOne(cascade = CascadeType.PERSIST)
@@ -54,6 +53,16 @@ public class UserStatus {
 
     public UserStatus() {
 
+    }
+
+    @PrePersist
+    public void onInsert() {
+        timestamp = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        timestamp = LocalDateTime.now();
     }
 
     public Boolean getIsOnline(){
