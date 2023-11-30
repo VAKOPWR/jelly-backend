@@ -66,7 +66,7 @@ public class UserService {
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
         final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getSpeed(), userStatusUpdateRequest.getBatteryLevel());
-        if (updates == 1) log.info("Updated user status for user with email {}", email);
+        if (updates == 1) log.debug("Updated user status for user with email {}", email);
     }
 
     public List<BasicUserResponse> findUsersNearLocation(String email) {
@@ -89,7 +89,7 @@ public class UserService {
     public void updateShakingStatus(String email, Boolean shakingStatus) {
         final User user = getUserByEmail(email);
         final int updates = userStatusRepository.updateIsShaking(user.getId(), shakingStatus);
-        if (updates == 1) log.info("Updated user shaking status for user with email {}", email);
+        if (updates == 1) log.debug("Updated user shaking status for user with email {}", email);
     }
 
     @Transactional
