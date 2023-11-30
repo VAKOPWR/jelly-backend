@@ -60,16 +60,6 @@ public class UserStatus {
         timestamp = LocalDateTime.now();
     }
 
-    @PreUpdate
-    public void onUpdate() {
-        timestamp = LocalDateTime.now();
-    }
-
-    public Boolean getIsOnline(){
-        Boolean isOnline = timestamp != null && ChronoUnit.MINUTES.between(timestamp, LocalDateTime.now()) < 5;
-        return isOnline;
-    }
-
     public String getLastOnline() {
         ChronoUnit[] units = {ChronoUnit.YEARS, ChronoUnit.MONTHS, ChronoUnit.DAYS, ChronoUnit.HOURS, ChronoUnit.MINUTES};
         for (ChronoUnit unit : units) {

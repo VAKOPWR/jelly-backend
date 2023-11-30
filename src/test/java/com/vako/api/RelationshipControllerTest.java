@@ -33,6 +33,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.vako.application.relationship.model.RelationshipStatus.*;
@@ -250,7 +251,7 @@ public class RelationshipControllerTest extends DbTestBase {
         var battery = 32;
         relationshipRepository.save(new Relationship(friendOne, friendTwo));
         relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
-        userStatusRepository.updateLocation(friendOne.getId(), lon, lat, speed, battery);
+        userStatusRepository.updateLocation(friendOne.getId(), lon, lat, speed, battery, LocalDateTime.now());
 
         //when
         final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
@@ -300,9 +301,9 @@ public class RelationshipControllerTest extends DbTestBase {
         var lon2 = BigDecimal.valueOf(2.5);
         var lat2 = BigDecimal.valueOf(6.5);
         var speed2 = 23;
-        userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, speed1, battery);
+        userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, speed1, battery, LocalDateTime.now());
         userStatusRepository.updateIsShaking(friendOne.getId(), true);
-        userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, speed2, battery);
+        userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, speed2, battery, LocalDateTime.now());
         userStatusRepository.updateIsShaking(friendTwo.getId(), true);
 
         //when
@@ -370,8 +371,8 @@ public class RelationshipControllerTest extends DbTestBase {
         relationshipRepository.save(new Relationship(friendOne, friendTwo));
         relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
         userRepository.updateStealthChoice(friendOne.getId(), StealthChoice.HIDE);
-        userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, 23, battery);
-        userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, 23, battery);
+        userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, 23, battery, LocalDateTime.now());
+        userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, 23, battery, LocalDateTime.now());
 
 
         //when
@@ -404,8 +405,8 @@ public class RelationshipControllerTest extends DbTestBase {
         relationshipRepository.save(new Relationship(friendOne, friendTwo));
         relationshipRepository.updateStatus(friendOne.getId(), friendTwo.getId(), ACTIVE);
         relationshipRepository.updateStealthChoiceUserOne(friendOne.getId(), friendTwo.getId(), StealthChoice.HIDE);
-        userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, 23, battery);
-        userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, 23, battery);
+        userStatusRepository.updateLocation(friendOne.getId(), lon1, lat1, 23, battery, LocalDateTime.now());
+        userStatusRepository.updateLocation(friendTwo.getId(), lon2, lat2, 23, battery, LocalDateTime.now());
 
 
         //when

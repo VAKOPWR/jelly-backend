@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,7 @@ public class UserService {
     @Transactional
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
-        final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getSpeed(), userStatusUpdateRequest.getBatteryLevel());
+        final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getSpeed(), userStatusUpdateRequest.getBatteryLevel(), LocalDateTime.now());
         if (updates == 1) log.info("Updated user status for user with email {}", email);
     }
 
