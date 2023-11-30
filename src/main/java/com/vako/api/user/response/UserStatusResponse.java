@@ -15,5 +15,4 @@ public class UserStatusResponse {
     private BigDecimal positionLon;
     private float speed;
     private int batteryLevel;
-
 }

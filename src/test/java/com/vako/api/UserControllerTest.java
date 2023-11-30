@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.vako.DbTestBase;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.model.UserStatus;
 import com.vako.application.user.repository.UserRepository;
@@ -155,6 +156,23 @@ public class UserControllerTest extends DbTestBase {
         //when
         final User user = userRepository.findAll().get(0);
         assertThat(user.getUserStatus().getIsShaking()).isEqualTo(true);
+    }
+
+    @Test
+    void shouldUpdateUserStealthChoice() throws Exception {
+        //given
+        var stealthChoice = StealthChoice.HIDE;
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/ghost/update/" + stealthChoice)
+                        .header(HttpHeaders.AUTHORIZATION, idToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //when
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getStealthChoice()).isEqualTo(StealthChoice.HIDE);
     }
 
 
