@@ -1,15 +1,13 @@
 package com.vako.application.user.repository;
 
+import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.user.model.User;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,5 +22,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByIdentifier(@Param("identifier") final String identifier);
 
     List<User> findAllByNicknameContainsAndNicknameNotIn(final String nickname, final List<String> exclusions, Pageable pageable);
+
+    List<User> findByGroupUsersIn(List<GroupUser> groupUserNotConnected);
 }
 

@@ -1,6 +1,6 @@
 package com.vako.application.group.model;
 
-import com.vako.application.groupUsers.model.GroupUsers;
+import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.message.model.Message;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -15,22 +15,22 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "is_friendship", nullable = false)
-    private Boolean isFriendship;
+    private boolean isFriendship;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "group_picture", nullable = false)
+    @Column(name = "group_picture")
     private String groupPicture;
 
     @OneToMany(mappedBy = "group")
     private Set<Message> messages;
 
     @OneToMany(mappedBy = "group")
-    private Set<GroupUsers> groupUsers;
+    private Set<GroupUser> groupUsers;
 
 }

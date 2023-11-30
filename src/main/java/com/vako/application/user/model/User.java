@@ -1,16 +1,14 @@
 package com.vako.application.user.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vako.application.relationship.model.Relationship;
-import com.vako.application.groupUsers.model.GroupUsers;
+import com.vako.application.groupUsers.model.GroupUser;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Entity
@@ -39,7 +37,7 @@ public class User {
     private String registrationToken;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private Set<GroupUsers> groupUsers = Collections.emptySet();
+    private Set<GroupUser> groupUsers = Collections.emptySet();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude

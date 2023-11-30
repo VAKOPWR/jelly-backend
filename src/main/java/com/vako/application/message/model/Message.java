@@ -5,6 +5,7 @@ import com.vako.application.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -26,8 +27,14 @@ public class Message {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @Column(name = "time_sent", nullable = false)
-    private Date timeSent;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private MessageStatus messageStatus;
 
+    @Column(name = "time_sent", nullable = false, columnDefinition = "DATETIME")
+    private LocalDateTime timeSent;
+
+    @Column(name = "attached_photo")
+    private String attachedPhoto;
 }
 
