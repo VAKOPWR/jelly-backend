@@ -6,16 +6,14 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.vako.DbTestBase;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.model.UserStatus;
 import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.repository.UserStatusRepository;
 import com.vako.util.IDTokenRequest;
 import com.vako.util.IDTokenResponse;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +32,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
 
 @AutoConfigureMockMvc
 public class UserControllerTest extends DbTestBase {
@@ -114,12 +113,41 @@ public class UserControllerTest extends DbTestBase {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        //when
+        //then
         final User user = userRepository.findAll().get(0);
         assertThat(user.getUserStatus().getPositionLon()).isEqualTo(lon);
         assertThat(user.getUserStatus().getPositionLat()).isEqualTo(lat);
         assertThat(user.getUserStatus().getBatteryLevel()).isEqualTo(battery);
         assertThat(user.getUserStatus().getSpeed()).isEqualTo(23);
+    }
+
+    @Test
+    @Disabled
+    void shouldUpdateTimestampWhenUpdatingUserStatus() throws Exception {
+        //given
+        var lon = BigDecimal.valueOf(2.5);
+        var lat = BigDecimal.valueOf(6.5);
+        var battery = 32;
+        final UserStatusUpdateRequest userStatusUpdateRequest = new UserStatusUpdateRequest(lon, lat, 23, battery);
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/status/update")
+                        .header(HttpHeaders.AUTHORIZATION, idToken)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(userStatusUpdateRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+        final LocalDateTime timestamp_1 = userRepository.findAll().get(0).getUserStatus().getTimestamp();
+        Thread.sleep(61_000L);
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/status/update")
+                        .header(HttpHeaders.AUTHORIZATION, idToken)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(userStatusUpdateRequest)))
+                .andExpect(status().isOk())
+                .andReturn();
+        //then
+        final LocalDateTime timestamp_2 = userRepository.findAll().get(0).getUserStatus().getTimestamp();
+        assertThat(timestamp_1).isNotEqualTo(timestamp_2);
     }
 
     @Test
@@ -138,6 +166,40 @@ public class UserControllerTest extends DbTestBase {
         assertThat(basicUserResponse.getNickname()).isEqualTo("oresto101");
         assertThat(basicUserResponse.getProfilePicture()).isNotEmpty();
         assertThat(basicUserResponse.getIsOnline()).isTrue();
+    }
+
+    @Test
+    void shouldUpdateUserShakingStatus() throws Exception {
+        //given
+        var shakingStatus = true;
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/shaking/update/" + shakingStatus)
+                        .header(HttpHeaders.AUTHORIZATION, idToken))
+                        .andExpect(status().isOk())
+                        .andReturn();
+
+        //then
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getUserStatus().getIsShaking()).isEqualTo(true);
+    }
+
+    @Test
+    void shouldUpdateUserStealthChoice() throws Exception {
+        //given
+        var stealthChoice = StealthChoice.HIDE;
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/ghost/update/" + stealthChoice)
+                        .header(HttpHeaders.AUTHORIZATION, idToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getStealthChoice()).isEqualTo(StealthChoice.HIDE);
     }
 
 

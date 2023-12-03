@@ -41,7 +41,6 @@ public class UserStatus {
     private Boolean isOnline = false;
 
     @Column(name = "timestamp")
-    @UpdateTimestamp
     private LocalDateTime timestamp;
 
     @OneToOne(cascade = CascadeType.PERSIST)
@@ -56,9 +55,9 @@ public class UserStatus {
 
     }
 
-    public Boolean getIsOnline(){
-        Boolean isOnline = timestamp != null && ChronoUnit.MINUTES.between(timestamp, LocalDateTime.now()) < 5;
-        return isOnline;
+    @PrePersist
+    public void onInsert() {
+        timestamp = LocalDateTime.now();
     }
 
     public String getLastOnline() {
