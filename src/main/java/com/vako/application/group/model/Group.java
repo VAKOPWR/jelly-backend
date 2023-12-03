@@ -1,9 +1,13 @@
 package com.vako.application.group.model;
 
-import com.vako.application.groupUsers.model.GroupUsers;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.message.model.Message;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Set;
 
@@ -15,22 +19,28 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
     @Column(name = "is_friendship", nullable = false)
-    private Boolean isFriendship;
+    private boolean isFriendship;
 
     @Column(name = "description")
     private String description;
 
-    @Column(name = "group_picture", nullable = false)
+    @Column(name = "group_picture")
     private String groupPicture;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonManagedReference
     private Set<Message> messages;
 
     @OneToMany(mappedBy = "group")
-    private Set<GroupUsers> groupUsers;
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonManagedReference
+    private Set<GroupUser> groupUsers;
 
 }
