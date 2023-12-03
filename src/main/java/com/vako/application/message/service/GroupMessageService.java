@@ -88,6 +88,6 @@ public class GroupMessageService {
     public Page<Message> loadMessages (Long groupId, int page){
         Pageable pageable = PageRequest.of(page, 40);
         Group group = groupRepository.getReferenceById(groupId);
-        return messageRepository.findMessageByGroup(group, (java.awt.print.Pageable) pageable);
+        return messageRepository.findMessageByGroup(group, pageable);
     }
 }
