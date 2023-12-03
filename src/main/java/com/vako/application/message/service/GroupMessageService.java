@@ -9,8 +9,12 @@ import com.vako.application.message.model.Message;
 import com.vako.application.message.repository.MessageRepository;
 import com.vako.application.user.model.User;
 import com.vako.application.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -29,13 +33,13 @@ public class GroupMessageService {
     }
 
     public List<GroupMessageDTO> getChats (Long userId){
-        List<GroupUser> groupUserConnected = groupUserRepository.findByUserId(userId);
+        List<GroupUser> groupUserConnected = groupUserRepository.findByUser(userRepository.getReferenceById(userId));
         List<Group> groups = groupRepository.findByGroupUsersIn(groupUserConnected);
         List<Message> lastMessages = messageRepository.findTopByGroupInOrderByTimeSentDesc(groups);
         List<GroupUser> groupUserNotConnected = groupUserRepository.findGroupUsersByGroupsAndUserNotIn(groups, userId);
         List<User> friends = userRepository.findByGroupUsersIn(groupUserNotConnected);
         
-        List<GroupMessageDTO> chats = null;
+        List<GroupMessageDTO> chats = new ArrayList<>();
         
         for (Group group: groups) {
             GroupMessageDTO chat = new GroupMessageDTO();
@@ -79,5 +83,11 @@ public class GroupMessageService {
         }
 
         return chats;
+    }
+
+    public Page<Message> loadMessages (Long groupId, int page){
+        Pageable pageable = PageRequest.of(page, 40);
+        Group group = groupRepository.getReferenceById(groupId);
+        return messageRepository.findMessageByGroup(group, (java.awt.print.Pageable) pageable);
     }
 }
