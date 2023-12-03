@@ -5,6 +5,7 @@ import com.vako.application.relationship.model.Relationship;
 import com.vako.application.groupUsers.model.GroupUser;
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.commons.lang3.builder.HashCodeExclude;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "stealth_choice")
     private StealthChoice stealthChoice = StealthChoice.PRECISE;
 
@@ -37,18 +39,23 @@ public class User {
     private String registrationToken;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<GroupUser> groupUsers = Collections.emptySet();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private UserStatus userStatus;
 
     @OneToMany(mappedBy = "userOne", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Relationship> sentRelationships = Collections.emptyList();
 
     @OneToMany(mappedBy = "userTwo", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Relationship> incomingRelationships = Collections.emptyList();
 
     @JsonIgnore
