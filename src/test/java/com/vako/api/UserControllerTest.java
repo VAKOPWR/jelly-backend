@@ -202,5 +202,22 @@ public class UserControllerTest extends DbTestBase {
         assertThat(user.getStealthChoice()).isEqualTo(StealthChoice.HIDE);
     }
 
+    @Test
+    void shouldUpdateUserRegistrationToken() throws Exception {
+        //given
+        var registrationToken = "abc";
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/fcm/update/" + registrationToken)
+                        .header(HttpHeaders.AUTHORIZATION, idToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getRegistrationToken()).isEqualTo(registrationToken);
+    }
+
 
 }

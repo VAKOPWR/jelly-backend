@@ -55,6 +55,10 @@ public class UserService {
         return createUser(token);
     }
 
+    public void updateRegistrationToken(final String email, final String token) {
+        userRepository.updateRegistrationToken(email, token);
+    }
+
     private User createUser(FirebaseToken token) {
         return userStatusRepository.save(new UserStatus(userMapper.firebaseTokenToUserMapper(token))).getUser();
     }

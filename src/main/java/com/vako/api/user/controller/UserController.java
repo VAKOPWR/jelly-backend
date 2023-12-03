@@ -88,5 +88,12 @@ public class UserController {
         userService.updateStealthChoice(decodedToken.getEmail(), stealthChoice);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/fcm/update/{token}")
+    public ResponseEntity<Void> updateFcmToken(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+                                               @PathVariable("token") String token) {
+        userService.updateRegistrationToken(decodedToken.getEmail(), token);
+        return ResponseEntity.ok().build();
+    }
 }
 

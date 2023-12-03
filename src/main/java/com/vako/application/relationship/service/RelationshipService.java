@@ -3,6 +3,7 @@ package com.vako.application.relationship.service;
 import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
+import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.mapper.UserMapper;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.vako.application.fcm.FirebaseNotificationText.ACCEPTED_FRIEND_REQUEST;
+import static com.vako.application.fcm.FirebaseNotificationText.SENT_FRIEND_REQUEST;
 import static com.vako.application.relationship.model.RelationshipStatus.*;
 
 @Service
@@ -41,14 +44,17 @@ public class RelationshipService {
 
     private final UserService userService;
 
+    private final FirebaseCloudMessagingService firebaseCloudMessagingService;
+
 
     @Transactional
-    public void sendFriendRequest(final String senderNickname, final Long id) {
-        final User sender = userService.getUserByIdentifier(senderNickname);
+    public void sendFriendRequest(final String senderEmail, final Long id) {
+        final User sender = userService.getUserByIdentifier(senderEmail);
         if (relationshipRepository.getRelationshipByUserIds(sender.getId(), id).isPresent())
             throw new JellyException(JellyExceptionType.RELATIONSHIP_ALREADY_EXISTS);
         final User recipient = userService.getUserById(id);
         relationshipRepository.save(new Relationship(sender, recipient));
+        firebaseCloudMessagingService.sendMessage(SENT_FRIEND_REQUEST.getMessageWithParams(sender.getNickname()), recipient.getRegistrationToken());
     }
 
     @Transactional
@@ -85,9 +91,14 @@ public class RelationshipService {
 
     @Transactional
     public void acceptFriendRequest(final String accepteeEmail, final Long senderId) {
-        final User user = userService.getUserByEmail(accepteeEmail);
-        final int updated = relationshipRepository.updateStatus(senderId, user.getId(), ACTIVE);
-        if (updated == 1) log.info("Set users with ids: {}, {} to status ACTIVE", senderId, user.getId());
+        final User acceptee = userService.getUserByEmail(accepteeEmail);
+        final int updated = relationshipRepository.updateStatus(senderId, acceptee.getId(), ACTIVE);
+        final User sender = userService.getUserById(senderId);
+        if (updated == 1) {
+            log.info("Set users with ids: {}, {} to status ACTIVE", senderId, acceptee.getId());
+            firebaseCloudMessagingService.sendMessage(ACCEPTED_FRIEND_REQUEST.getMessageWithParams(acceptee.getNickname()), sender.getRegistrationToken());
+        }
+
     }
 
     @Transactional

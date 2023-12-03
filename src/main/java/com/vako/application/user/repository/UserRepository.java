@@ -28,6 +28,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User u set u.stealthChoice = :stealthChoice WHERE u.id = :id ")
     int updateStealthChoice(@Param("id") Long id, @Param("stealthChoice") StealthChoice stealthChoice);
 
+    @Modifying(flushAutomatically = true)
+    @Transactional
+    @Query("update User u set u.registrationToken = :registrationToken WHERE u.email = :email ")
+    int updateRegistrationToken(@Param("email") String email, @Param("registrationToken") String registrationToken);
+
     List<User> findAllByNicknameContainsAndNicknameNotIn(final String nickname, final List<String> exclusions, Pageable pageable);
 }
 
