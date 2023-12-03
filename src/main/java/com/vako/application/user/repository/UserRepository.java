@@ -3,8 +3,12 @@ package com.vako.application.user.repository;
 import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
