@@ -11,7 +11,6 @@ import com.vako.application.user.model.UserStatus;
 import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.repository.UserStatusRepository;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,7 +31,6 @@ public class UserService {
 
     private static final double EARTH_RADIUS_KM = 6371.0;
     private static final double ACCEPTABLE_RADIUS_KM = 1.0;
-
 
     private final String avatarUrl;
 
