@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -73,9 +74,8 @@ public class UserService {
     }
 
     public User createUserIfDoesntExist(FirebaseToken token) {
-        if (userRepository.existsByEmail(token.getEmail()))
-            return null;
-        return createUser(token);
+        final Optional<User> user = userRepository.findByEmail(token.getEmail());
+        return user.orElseGet(() -> createUser(token));
     }
 
     public void updateRegistrationToken(final String email, final String token) {
