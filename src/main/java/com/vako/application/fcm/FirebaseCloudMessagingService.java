@@ -17,13 +17,14 @@ public class FirebaseCloudMessagingService {
 
     private final FirebaseMessaging firebaseMessagingService;
 
-    public void sendMessage(final Message.Builder messageBuilder, final String registrationToken) {
+    public String sendMessage(final Message.Builder messageBuilder, final String registrationToken) {
         final Message message = messageBuilder.setToken(registrationToken).build();
         try {
-            firebaseMessagingService.send(message);
+            return firebaseMessagingService.send(message);
         }
         catch (FirebaseMessagingException ex) {
             log.error("Error sending message: {}", ex.getMessage());
         }
+        return "";
     }
 }

@@ -41,7 +41,7 @@ public class UserStatus {
     private Boolean isOnline = false;
 
     @Column(name = "timestamp")
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "uid", referencedColumnName = "id")

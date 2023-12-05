@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.vako.DbTestBase;
 import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
+import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.model.StealthChoice;
@@ -20,8 +22,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -37,6 +41,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static com.vako.application.relationship.model.RelationshipStatus.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,6 +54,9 @@ public class RelationshipControllerTest extends DbTestBase {
     private User friendOne;
 
     private User friendTwo;
+
+    @MockBean
+    private FirebaseCloudMessagingService firebaseMessaging;
 
     @Autowired
     private UserStatusRepository userStatusRepository;
@@ -73,6 +81,7 @@ public class RelationshipControllerTest extends DbTestBase {
 
     @BeforeEach
     void setUpUser() throws Exception {
+        Mockito.when(firebaseMessaging.sendMessage(any(), any())).thenReturn("");
         MvcResult user1Response = mockMvc.perform(MockMvcRequestBuilders
                         .post(API_PATH + "/user/create")
                         .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne))
