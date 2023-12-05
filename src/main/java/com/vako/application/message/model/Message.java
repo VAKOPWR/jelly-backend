@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vako.application.group.model.Group;
 import com.vako.application.user.model.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,6 +15,7 @@ import java.util.Date;
 
 @Entity
 @Data
+@AllArgsConstructor
 @Table(name = "Messages")
 @JsonIgnoreProperties({"group_id"})
 public class Message {
@@ -47,5 +49,10 @@ public class Message {
 
     @Column(name = "attached_photo")
     private String attachedPhoto;
+
+
+    public Message() {
+
+    }
 }
 
