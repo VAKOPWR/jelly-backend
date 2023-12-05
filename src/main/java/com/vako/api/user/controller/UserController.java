@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -23,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @AllArgsConstructor
 public class UserController {
 
-    private AtomicLong atomicLong = new AtomicLong(0L);
+
 
     private final UserService userService;
 
@@ -54,7 +53,6 @@ public class UserController {
     @PutMapping("/status/update")
     public ResponseEntity<Void> updateLocation(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestBody final UserStatusUpdateRequest userStatusUpdateRequest) {
-        if (decodedToken.getEmail().equals("k.kostakov2002@gmail.com")) log.debug("Request to update location by Kyrylo: {}", atomicLong.incrementAndGet());
         userService.updateLocation(decodedToken.getEmail(), userStatusUpdateRequest);
         return ResponseEntity.ok().build();
     }

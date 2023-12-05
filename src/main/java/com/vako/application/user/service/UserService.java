@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +32,8 @@ public class UserService {
 
     private static final double EARTH_RADIUS_KM = 6371.0;
     private static final double ACCEPTABLE_RADIUS_KM = 1.0;
+
+    private final AtomicLong kyryloCounter = new AtomicLong(0L);
 
     private final String avatarUrl;
 
@@ -92,7 +95,8 @@ public class UserService {
     public void updateLocation(String email, UserStatusUpdateRequest userStatusUpdateRequest) {
         final User user = getUserByEmail(email);
         final int updates = userStatusRepository.updateLocation(user.getId(), userStatusUpdateRequest.getLongitude(), userStatusUpdateRequest.getLatitude(), userStatusUpdateRequest.getSpeed(), userStatusUpdateRequest.getBatteryLevel(), LocalDateTime.now());
-        if (updates == 1) log.debug("Updated user status for user with email {}", email);
+        if (updates == 1 && email.equals("k.kostakov2002@gmail.com"))
+            log.debug("Request to update location by Kyrylo: {}", kyryloCounter.incrementAndGet());
     }
 
     @Transactional
