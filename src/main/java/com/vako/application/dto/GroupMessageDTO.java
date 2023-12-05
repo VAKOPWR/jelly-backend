@@ -1,12 +1,12 @@
 package com.vako.application.dto;
 
-import com.vako.application.message.model.Message;
 import com.vako.application.message.model.MessageStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,6 +18,7 @@ public class GroupMessageDTO {
     private boolean isPinned;
     private boolean isMuted;
     private String picture;
+    private String description;
     private boolean isFriendship;
     private Long friendId;
     private Long lastMessageSenderId;
@@ -25,4 +26,5 @@ public class GroupMessageDTO {
     private LocalDateTime lastMessageTimeSent;
     private MessageStatus lastMessageMessagesStatus;
     private String lastMessageAttachedPhoto;
+    private List<ChatUserDTO> groupUsers;
 }

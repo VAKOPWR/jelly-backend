@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/group-users")
+@RequestMapping("/api/v1/group-users")
 public class GroupUsersController {
     private final GroupUserService groupUserService;
 
