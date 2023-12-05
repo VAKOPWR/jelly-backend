@@ -35,4 +35,5 @@ public interface UserStatusRepository extends JpaRepository<UserStatus, Long> {
     @Transactional
     @Query("update UserStatus us set us.isShaking = :isShaking WHERE us.user.id = :id ")
     int updateIsShaking(@Param("id") Long id, @Param("isShaking") Boolean isShaking);
+
 }

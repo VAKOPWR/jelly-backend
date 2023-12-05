@@ -3,6 +3,7 @@ package com.vako.application.user.service;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
+import com.vako.application.image.BlobStorageService;
 import com.vako.application.user.mapper.UserMapper;
 import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
@@ -12,26 +13,48 @@ import com.vako.application.user.repository.UserStatusRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class UserService {
 
     private static final double EARTH_RADIUS_KM = 6371.0;
     private static final double ACCEPTABLE_RADIUS_KM = 1.0;
+
+
+    private final String avatarUrl;
+
+    private final BlobStorageService blobStorageService;
 
     private final UserMapper userMapper;
 
     private final UserRepository userRepository;
 
     private final UserStatusRepository userStatusRepository;
+
+    @Autowired
+    public UserService(@Value("${azure.blob.url}")final String avatarUrl,
+                       final BlobStorageService blobStorageService,
+                       final UserMapper userMapper,
+                       final UserRepository userRepository,
+                       final UserStatusRepository userStatusRepository){
+        this.avatarUrl = avatarUrl;
+        this.blobStorageService = blobStorageService;
+        this.userMapper = userMapper;
+        this.userRepository = userRepository;
+        this.userStatusRepository = userStatusRepository;
+    }
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow();
@@ -74,10 +97,14 @@ public class UserService {
         if (updates == 1) log.debug("Updated user status for user with email {}", email);
     }
 
+    @Transactional
+    public void updateNickname(String email, String newNickname) {
+        userRepository.updateNickname(email, newNickname);
+    }
+
     public List<BasicUserResponse> findUsersNearLocation(String email) {
         final User user = getUserByEmail(email);
         List<UserStatus> allUsersWhoAreShaking = userStatusRepository.findAllUsersWhoAreShaking(user.getId());
-
         return allUsersWhoAreShaking.stream()
                 .filter(us -> calculateDistance(
                         user.getUserStatus().getPositionLat(),
@@ -95,6 +122,14 @@ public class UserService {
         final User user = getUserByEmail(email);
         final int updates = userStatusRepository.updateIsShaking(user.getId(), shakingStatus);
         if (updates == 1) log.debug("Updated user shaking status for user with email {}", email);
+    }
+
+    @Transactional
+    public void updateAvatar(final String email, final MultipartFile file) throws IOException {
+        final String uuid = UUID.randomUUID().toString();
+        blobStorageService.saveAvatar(file, uuid);
+        final String link = avatarUrl + uuid;
+        userRepository.updateAvatarId(email, link);
     }
 
     @Transactional

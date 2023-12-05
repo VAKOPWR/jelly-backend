@@ -22,7 +22,17 @@ public class UserController {
 
     private final UserService userService;
 
-    private final BlobStorageService blobStorageService;
+    @GetMapping
+    public ResponseEntity<String> pingUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/nickname/{nickname}")
+    public ResponseEntity<String> editNickname(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+                                               @PathVariable("nickname") final String newNickname) {
+        userService.updateNickname(decodedToken.getEmail(), newNickname);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
@@ -32,7 +42,7 @@ public class UserController {
 
     @PostMapping(value = "/avatars", consumes = {"multipart/form-data"})
     public ResponseEntity<String> storeImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("image") final MultipartFile file) throws IOException {
-        blobStorageService.saveImage(file, decodedToken.getEmail());
+        userService.updateAvatar(decodedToken.getEmail(), file);
         return ResponseEntity.ok("");
     }
 

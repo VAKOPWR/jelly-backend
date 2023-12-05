@@ -33,6 +33,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("update User u set u.registrationToken = :registrationToken WHERE u.email = :email ")
     int updateRegistrationToken(@Param("email") String email, @Param("registrationToken") String registrationToken);
 
+    @Modifying(flushAutomatically = true)
+    @Transactional
+    @Query("update User u set u.profilePicture = :profilePicture WHERE u.email = :email ")
+    int updateAvatarId(@Param("email") String email, @Param("profilePicture") String pictureId);
+
+    @Modifying(flushAutomatically = true)
+    @Transactional
+    @Query("update User u set u.nickname = :nickname WHERE u.email = :email ")
+    int updateNickname(@Param("email") String email, @Param("nickname") String nickname);
+
     List<User> findAllByNicknameContainsAndNicknameNotIn(final String nickname, final List<String> exclusions, Pageable pageable);
 }
 
