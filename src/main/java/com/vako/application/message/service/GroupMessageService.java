@@ -3,6 +3,7 @@ package com.vako.application.message.service;
 import com.vako.application.dto.ChatUserDTO;
 import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
+import com.vako.application.dto.NewGroupChatDTO;
 import com.vako.application.group.model.Group;
 import com.vako.application.group.repository.GroupRepository;
 import com.vako.application.groupUsers.model.GroupUser;
@@ -151,14 +152,22 @@ public class GroupMessageService {
         createGroupUser(userId2, group.getId());
     }
 
-    public void createGroup(List<Long> userIds, String groupName, String description){
+    public NewGroupChatDTO createGroup(List<Long> userIds, String groupName, String description){
         Group group = new Group();
         group.setFriendship(false);
         group.setName(groupName);
         group.setDescription(description);
         groupRepository.save(group);
+        NewGroupChatDTO newGroupChatDTO = new NewGroupChatDTO();
+        newGroupChatDTO.setGroupId(group.getId());
+        List<ChatUserDTO> chatUsers = new ArrayList<>();
         for (Long userId:userIds) {
             createGroupUser(userId, group.getId());
+            User user = userRepository.getReferenceById(userId);
+            ChatUserDTO chatUserDTO = new ChatUserDTO(user.getId(), user.getNickname(), user.getProfilePicture());
+            chatUsers.add(chatUserDTO);
         }
+        newGroupChatDTO.setChatUserDTOS(chatUsers);
+        return newGroupChatDTO;
     }
 }

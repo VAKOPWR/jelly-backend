@@ -2,6 +2,7 @@ package com.vako.api.message.controller;
 
 import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
+import com.vako.application.dto.NewGroupChatDTO;
 import com.vako.application.message.model.MessageStatus;
 import com.vako.application.message.service.GroupMessageService;
 import org.springframework.http.MediaType;
@@ -62,7 +63,7 @@ public class GroupMessageController {
             consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<String> createGroupChat(
+    public NewGroupChatDTO createGroupChat(
             @RequestBody Map<String, Object> requestPayload) {
         String chatName = (String) requestPayload.get("chatName");
         String description = (String) requestPayload.get("description");
@@ -72,12 +73,9 @@ public class GroupMessageController {
                 .map(Integer::longValue)
                 .collect(Collectors.toList());
         if (description == null || description.isBlank()) {
-            groupMessageService.createGroup(userIdsLong, chatName, null);
-        } else {
-            groupMessageService.createGroup(userIdsLong, chatName, description);
+            return groupMessageService.createGroup(userIdsLong, chatName, null);
         }
-
-        return ResponseEntity.ok("Group created successfully");
+        return groupMessageService.createGroup(userIdsLong, chatName, description);
     }
 
 }
