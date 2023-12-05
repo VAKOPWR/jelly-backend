@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class GroupMessageService {
@@ -37,77 +38,82 @@ public class GroupMessageService {
         this.userRepository = userRepository;
     }
 
-    public List<GroupMessageDTO> getChats (Long userId){
-        List<GroupUser> groupUserConnected = groupUserRepository.findByUser(userRepository.getReferenceById(userId));
-        List<Group> groups = groupRepository.findByGroupUsersIn(groupUserConnected);
-        List<Message> lastMessages = messageRepository.findTopByGroupInOrderByTimeSentDesc(groups);
-        List<GroupUser> groupUserNotConnected = groupUserRepository.findGroupUsersByGroupsAndUserNotIn(groups, userId);
-        List<User> chatUsers = userRepository.findByGroupUsersIn(groupUserNotConnected);
-        
-        List<GroupMessageDTO> chats = new ArrayList<>();
-        
-        for (Group group: groups) {
-            GroupMessageDTO chat = new GroupMessageDTO();
-            chat.setGroupId(group.getId());
-            chat.setFriendship(group.isFriendship());
+    public List<GroupMessageDTO> getChats (String email){
+        Optional<User> tempUser1 = userRepository.findByEmail(email);
+        if (tempUser1!=null){
+            Long userId = tempUser1.get().getId();
+            List<GroupUser> groupUserConnected = groupUserRepository.findByUser(userRepository.getReferenceById(userId));
+            List<Group> groups = groupRepository.findByGroupUsersIn(groupUserConnected);
+            List<Message> lastMessages = messageRepository.findTopByGroupInOrderByTimeSentDesc(groups);
+            List<GroupUser> groupUserNotConnected = groupUserRepository.findGroupUsersByGroupsAndUserNotIn(groups, userId);
+            List<User> chatUsers = userRepository.findByGroupUsersIn(groupUserNotConnected);
 
-            for (GroupUser groupuser: groupUserConnected) {
-                if (groupuser.getGroup() == group){
-                    chat.setMuted(groupuser.isMuted());
-                    chat.setPinned(groupuser.isPinned());
-                    break;
-                }
-            }
+            List<GroupMessageDTO> chats = new ArrayList<>();
 
-            for (Message message:lastMessages){
-                if (message.getGroup() == group){
-                    chat.setLastMessageText(message.getText());
-                    chat.setLastMessageMessagesStatus(message.getMessageStatus());
-                    chat.setLastMessageSenderId(message.getUser().getId());
-                    chat.setLastMessageTimeSent(message.getTimeSent());
-                    chat.setLastMessageAttachedPhoto(message.getAttachedPhoto());
-                    break;
-                }
-            }
-            if (!group.isFriendship()){
-                chat.setGroupName(group.getName());
-                chat.setPicture(group.getGroupPicture());
-                chat.setDescription(group.getDescription());
-                List<ChatUserDTO> chatUserDTOS = new ArrayList<>();
-                for (GroupUser groupUser:groupUserNotConnected){
-                    if (groupUser.getGroup() == group){
-                        for (User chatUser:chatUsers){
-                            User tempUser = groupUser.getUser();
-                            if (tempUser == chatUser){
-                                chatUserDTOS.add(new ChatUserDTO(tempUser.getId(), tempUser.getNickname(), tempUser.getProfilePicture()));
-                                break;
-                            }
-                        }
+            for (Group group: groups) {
+                GroupMessageDTO chat = new GroupMessageDTO();
+                chat.setGroupId(group.getId());
+                chat.setFriendship(group.isFriendship());
+
+                for (GroupUser groupuser: groupUserConnected) {
+                    if (groupuser.getGroup() == group){
+                        chat.setMuted(groupuser.isMuted());
+                        chat.setPinned(groupuser.isPinned());
                         break;
                     }
                 }
-                chat.setGroupUsers(chatUserDTOS);
-            }
-            else {
-                for (GroupUser groupUser:groupUserNotConnected) {
-                    if (groupUser.getGroup() == group){
-                        for (User friend:chatUsers) {
-                            if (groupUser.getUser() == friend){
-                                chat.setGroupName(friend.getNickname());
-                                chat.setPicture(friend.getProfilePicture());
-                                chat.setFriendId(friend.getId());
-                                break;
-                            }
-                        }
+
+                for (Message message:lastMessages){
+                    if (message.getGroup() == group){
+                        chat.setLastMessageText(message.getText());
+                        chat.setLastMessageMessagesStatus(message.getMessageStatus());
+                        chat.setLastMessageSenderId(message.getUser().getId());
+                        chat.setLastMessageTimeSent(message.getTimeSent());
+                        chat.setLastMessageAttachedPhoto(message.getAttachedPhoto());
                         break;
                     }
                 }
+                if (!group.isFriendship()){
+                    chat.setGroupName(group.getName());
+                    chat.setPicture(group.getGroupPicture());
+                    chat.setDescription(group.getDescription());
+                    List<ChatUserDTO> chatUserDTOS = new ArrayList<>();
+                    for (GroupUser groupUser:groupUserNotConnected){
+                        if (groupUser.getGroup() == group){
+                            for (User chatUser:chatUsers){
+                                User tempUser = groupUser.getUser();
+                                if (tempUser == chatUser){
+                                    chatUserDTOS.add(new ChatUserDTO(tempUser.getId(), tempUser.getNickname(), tempUser.getProfilePicture()));
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    chat.setGroupUsers(chatUserDTOS);
+                }
+                else {
+                    for (GroupUser groupUser:groupUserNotConnected) {
+                        if (groupUser.getGroup() == group){
+                            for (User friend:chatUsers) {
+                                if (groupUser.getUser() == friend){
+                                    chat.setGroupName(friend.getNickname());
+                                    chat.setPicture(friend.getProfilePicture());
+                                    chat.setFriendId(friend.getId());
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                chats.add(chat);
             }
 
-            chats.add(chat);
+            return chats;
         }
-
-        return chats;
+        return new ArrayList<>();
     }
 
     public List<MessageDTO> loadMessagesPaged(Long groupId, int page){

@@ -25,9 +25,9 @@ public class GroupMessageController {
         this.groupMessageService = groupMessageService;
     }
 
-    @GetMapping("/{userId}")
-    public List<GroupMessageDTO> getChats (@PathVariable Long userId){
-        return groupMessageService.getChats(userId);
+    @GetMapping("/{userEmail}")
+    public List<GroupMessageDTO> getChats (@PathVariable String userEmail){
+        return groupMessageService.getChats(userEmail);
     }
 
     @GetMapping("/loadMessagesNew")
