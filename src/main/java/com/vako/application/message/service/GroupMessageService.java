@@ -1,5 +1,6 @@
 package com.vako.application.message.service;
 
+import com.vako.application.dto.ChatUserDTO;
 import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
 import com.vako.application.group.model.Group;
@@ -40,7 +41,7 @@ public class GroupMessageService {
         List<Group> groups = groupRepository.findByGroupUsersIn(groupUserConnected);
         List<Message> lastMessages = messageRepository.findTopByGroupInOrderByTimeSentDesc(groups);
         List<GroupUser> groupUserNotConnected = groupUserRepository.findGroupUsersByGroupsAndUserNotIn(groups, userId);
-        List<User> friends = userRepository.findByGroupUsersIn(groupUserNotConnected);
+        List<User> chatUsers = userRepository.findByGroupUsersIn(groupUserNotConnected);
         
         List<GroupMessageDTO> chats = new ArrayList<>();
         
@@ -70,11 +71,26 @@ public class GroupMessageService {
             if (!group.isFriendship()){
                 chat.setGroupName(group.getName());
                 chat.setPicture(group.getGroupPicture());
+                chat.setDescription(group.getDescription());
+                List<ChatUserDTO> chatUserDTOS = new ArrayList<>();
+                for (GroupUser groupUser:groupUserNotConnected){
+                    if (groupUser.getGroup() == group){
+                        for (User chatUser:chatUsers){
+                            User tempUser = groupUser.getUser();
+                            if (tempUser == chatUser){
+                                chatUserDTOS.add(new ChatUserDTO(tempUser.getId(), tempUser.getNickname(), tempUser.getProfilePicture()));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                chat.setGroupUsers(chatUserDTOS);
             }
             else {
                 for (GroupUser groupUser:groupUserNotConnected) {
                     if (groupUser.getGroup() == group){
-                        for (User friend:friends) {
+                        for (User friend:chatUsers) {
                             if (groupUser.getUser() == friend){
                                 chat.setGroupName(friend.getNickname());
                                 chat.setPicture(friend.getProfilePicture());

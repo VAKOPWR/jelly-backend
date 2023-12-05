@@ -2,7 +2,6 @@ package com.vako.api.message.controller;
 
 import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
-import com.vako.application.message.model.Message;
 import com.vako.application.message.model.MessageStatus;
 import com.vako.application.message.service.GroupMessageService;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v4/chats")
+//@RequestMapping("/api/v1/chats")
+@RequestMapping("/chats")
 public class GroupMessageController {
 
     private final GroupMessageService groupMessageService;
@@ -68,3 +68,4 @@ public class GroupMessageController {
         return null;
     }
 }
+
