@@ -4,11 +4,14 @@ import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
 import com.vako.application.message.model.MessageStatus;
 import com.vako.application.message.service.GroupMessageService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 //@RequestMapping("/api/v1/chats")
@@ -54,18 +57,28 @@ public class GroupMessageController {
         return ResponseEntity.ok("Message sent successfully");
     }
 
-    @PutMapping("/createGroupChat")
+    @PutMapping(
+            value = "/createGroupChat",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
     public ResponseEntity<String> createGroupChat(
-            @RequestParam String chatName,
-            @RequestParam String description,
-            @RequestBody List<Long> userIds){
-        if (description.isBlank()){
-            groupMessageService.createGroup(userIds, chatName, null);
+            @RequestBody Map<String, Object> requestPayload) {
+        String chatName = (String) requestPayload.get("chatName");
+        String description = (String) requestPayload.get("description");
+        List<Integer> userIds = (List<Integer>) requestPayload.get("userIds");
+
+        List<Long> userIdsLong = userIds.stream()
+                .map(Integer::longValue)
+                .collect(Collectors.toList());
+        if (description == null || description.isBlank()) {
+            groupMessageService.createGroup(userIdsLong, chatName, null);
+        } else {
+            groupMessageService.createGroup(userIdsLong, chatName, description);
         }
-        else {
-            groupMessageService.createGroup(userIds, chatName, description);
-        }
-        return null;
+
+        return ResponseEntity.ok("Group created successfully");
     }
+
 }
 
