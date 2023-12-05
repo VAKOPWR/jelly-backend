@@ -3,6 +3,7 @@ package com.vako.application.relationship.service;
 import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
+import com.vako.application.message.service.GroupMessageService;
 import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
@@ -43,6 +44,8 @@ public class RelationshipService {
     private final UserRepository userRepository;
 
     private final UserService userService;
+
+    private final GroupMessageService groupMessageService;
 
     private final FirebaseCloudMessagingService firebaseCloudMessagingService;
 
@@ -92,6 +95,7 @@ public class RelationshipService {
     @Transactional
     public void acceptFriendRequest(final String accepteeEmail, final Long senderId) {
         final User acceptee = userService.getUserByEmail(accepteeEmail);
+        groupMessageService.createPersonalChat(acceptee.getId(), senderId);
         final int updated = relationshipRepository.updateStatus(senderId, acceptee.getId(), ACTIVE);
         final User sender = userService.getUserById(senderId);
         if (updated == 1) {
