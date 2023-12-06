@@ -42,18 +42,20 @@ public class GroupMessageController {
         return groupMessageService.loadMessagesPaged(groupId, page);
     }
 
-    @PutMapping("/sendMessage")
-    public ResponseEntity<String> createMessage(
-            @RequestParam Long groupId,
-            @RequestParam Long senderId,
-            @RequestParam String text,
-            @RequestParam String timeSent,
-            @RequestParam String messageStatus,
-            @RequestParam(required = false) String attachedPhoto) {
+    @PutMapping(
+            value = "/sendMessage",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<String> createMessage(@RequestBody Map<String, Object> requestPayload) {
+        LocalDateTime time = LocalDateTime.parse((String) requestPayload.get("timeSent"));
 
-        LocalDateTime time = LocalDateTime.parse(timeSent);
-
-        groupMessageService.createMessage(senderId, groupId, text, MessageStatus.valueOf(messageStatus), time, attachedPhoto);
+        groupMessageService.createMessage(
+                (Long) requestPayload.get("senderId"),
+                (Long) requestPayload.get("groupId"),
+                (String) requestPayload.get("text"),
+                MessageStatus.SENT, time,
+                (String) requestPayload.get("attachedPhoto"));
 
         return ResponseEntity.ok("Message sent successfully");
     }

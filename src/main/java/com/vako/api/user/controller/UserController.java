@@ -16,8 +16,9 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/user")
+//@RequestMapping("/api/v1/user")
 @AllArgsConstructor
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -87,6 +88,12 @@ public class UserController {
     ) {
         userService.updateStealthChoice(decodedToken.getEmail(), stealthChoice);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getId/{email}")
+    public ResponseEntity<Integer> getIdByEmail(@PathVariable("email") String email){
+        final int id = userService.getUserByEmail(email).getId().intValue();
+        return ResponseEntity.ok(id);
     }
 }
 
