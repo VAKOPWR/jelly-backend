@@ -22,8 +22,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UserController {
 
-
-
     private final UserService userService;
 
     @GetMapping
@@ -108,6 +106,12 @@ public class UserController {
                                                @PathVariable("token") String token) {
         userService.updateRegistrationToken(decodedToken.getEmail(), token);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getId/{email}")
+    public ResponseEntity<Integer> getIdByEmail(@PathVariable("email") String email){
+        final int id = userService.getUserByEmail(email).getId().intValue();
+        return ResponseEntity.ok(id);
     }
 }
 

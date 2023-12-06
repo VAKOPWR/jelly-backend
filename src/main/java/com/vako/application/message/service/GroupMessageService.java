@@ -149,7 +149,6 @@ public class GroupMessageService {
         groupUserRepository.save(groupUser);
     }
 
-    //TODO: use this when adding a new friend
     public void createPersonalChat(Long userId1, Long userId2) {
         Group group = new Group();
         group.setFriendship(true);
