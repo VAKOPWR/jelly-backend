@@ -1,5 +1,8 @@
 package com.vako.api.message.controller;
 
+import com.google.firebase.auth.FirebaseToken;
+import com.vako.api.message.request.CreateGroupChatRequest;
+import com.vako.api.message.request.CreateMessageRequest;
 import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
 import com.vako.application.dto.NewGroupChatDTO;
@@ -16,8 +19,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-//@RequestMapping("/api/v1/chats")
-@RequestMapping("/chats")
+@RequestMapping("/api/v1/chats")
 public class GroupMessageController {
 
     private final GroupMessageService groupMessageService;
@@ -26,73 +28,41 @@ public class GroupMessageController {
         this.groupMessageService = groupMessageService;
     }
 
-    @GetMapping("/{userEmail}")
-    public List<GroupMessageDTO> getChats (@PathVariable String userEmail){
-        return groupMessageService.getChats(userEmail);
+//    @GetMapping
+//    public List<GroupMessageDTO> getChats(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken){
+//        return groupMessageService.getChats(decodedToken.getEmail());
+//    }
+//
+//    @GetMapping("/message/new/{lastChecked}")
+//    public List<MessageDTO> getMessagesNew(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+//                                           @PathVariable("lastChecked") String lastChecked,
+//                                           @RequestBody List<Long> groupIds){
+//        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+//        LocalDateTime lastCheckedTime = LocalDateTime.parse(lastChecked, formatter);
+//        return groupMessageService.loadMessagesNew(lastCheckedTime, groupIds);
+//    }
+//
+//    @GetMapping("/message")
+//    public List<MessageDTO> getMessagesByGroup(
+//            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+//            @RequestParam Long groupId,
+//            @RequestParam int page) {
+//        return groupMessageService.loadMessagesPaged(groupId, page);
+//    }
+
+    @PostMapping("/message")
+    public ResponseEntity<Void> createMessage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+                                                @RequestBody final CreateMessageRequest createMessageRequest) {
+        groupMessageService.createMessage(decodedToken.getEmail(), createMessageRequest);
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/loadMessagesNew/{lastChecked}")
-    public List<MessageDTO> getMessagesNew(@PathVariable String lastChecked, @RequestBody() List<Long> groupIds){
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        LocalDateTime lastCheckedTime = LocalDateTime.parse(lastChecked, formatter);
-        return groupMessageService.loadMessagesNew(lastCheckedTime, groupIds);
-    }
-
-    @GetMapping("/loadMessagesPaged")
-    public List<MessageDTO> getMessagesByGroup(
-            @RequestParam Long groupId,
-            @RequestParam int page) {
-        return groupMessageService.loadMessagesPaged(groupId, page);
-    }
-
-    @PutMapping(
-            value = "/sendMessage",
-            consumes = {MediaType.APPLICATION_JSON_VALUE},
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public ResponseEntity<String> createMessage(@RequestBody Map<String, Object> requestPayload) {
-        LocalDateTime time = LocalDateTime.parse((String) requestPayload.get("timeSent"));
-
-        groupMessageService.createMessage(
-                parseLong(requestPayload.get("senderId")),
-                parseLong(requestPayload.get("groupId")),
-                (String) requestPayload.get("text"),
-                MessageStatus.SENT,
-                time,
-                (String) requestPayload.get("attachedPhoto"));
-
-        return ResponseEntity.ok("Message sent successfully");
-    }
-
-    @PutMapping(
-            value = "/createGroupChat",
-            consumes = {MediaType.APPLICATION_JSON_VALUE},
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
-    public NewGroupChatDTO createGroupChat(
-            @RequestBody Map<String, Object> requestPayload) {
-        String chatName = (String) requestPayload.get("chatName");
-        String description = (String) requestPayload.get("description");
-        List<Integer> userIds = (List<Integer>) requestPayload.get("userIds");
-
-        List<Long> userIdsLong = userIds.stream()
-                .map(Integer::longValue)
-                .collect(Collectors.toList());
-        if (description == null || description.isBlank()) {
-            return groupMessageService.createGroup(userIdsLong, chatName, null);
-        }
-        return groupMessageService.createGroup(userIdsLong, chatName, description);
-    }
-
-    private Long parseLong(Object value) {
-        if (value instanceof Number) {
-            return ((Number) value).longValue();
-        } else if (value instanceof String) {
-            return Long.valueOf((String) value);
-        } else {
-            throw new IllegalArgumentException("Invalid value for Long parsing");
-        }
-    }
+//    @PutMapping( "/group/create")
+//    public ResponseEntity<Void> createGroupChat(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+//                                                @RequestBody final CreateGroupChatRequest createGroupChatRequest) {
+//        groupMessageService.createGroup(decodedToken.getEmail(), createGroupChatRequest);
+//        return ResponseEntity.ok().build();
+//    }
 
 }
 
