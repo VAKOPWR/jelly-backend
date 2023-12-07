@@ -1,6 +1,7 @@
 package com.vako.application.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.relationship.model.Relationship;
 import jakarta.persistence.*;
@@ -39,14 +40,16 @@ public class User {
     @Column(name = "registration_token")
     private String registrationToken;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<GroupUser> groupUsers = Collections.emptySet();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
+
     private UserStatus userStatus;
 
     @OneToMany(mappedBy = "userOne", cascade = CascadeType.ALL, fetch = FetchType.EAGER)

@@ -1,5 +1,6 @@
 package com.vako.application.group.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vako.application.groupUsers.model.GroupUser;
@@ -43,13 +44,12 @@ public class Group {
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JsonManagedReference
     private Set<Message> messages;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JsonManagedReference
+    @JsonIgnore
     private Set<GroupUser> groupUsers;
 
 }

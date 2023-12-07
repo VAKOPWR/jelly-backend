@@ -1,14 +1,17 @@
 package com.vako.application.groupUsers.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vako.application.group.model.Group;
 import com.vako.application.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
 @Table(name = "Group_User")
+@NoArgsConstructor
 public class GroupUser {
 
     public GroupUser(final User user,
@@ -21,12 +24,12 @@ public class GroupUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
+    @ManyToOne(cascade = CascadeType.DETACH)
+    @JoinColumn(name = "group_id", referencedColumnName = "id", nullable = false)
     private Group group;
 
     @Column(name = "is_muted", nullable = false)
