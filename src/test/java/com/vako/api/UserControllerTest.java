@@ -13,11 +13,13 @@ import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.repository.UserStatusRepository;
 import com.vako.util.IDTokenRequest;
 import com.vako.util.IDTokenResponse;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -26,12 +28,14 @@ import static com.vako.application.user.model.StealthChoice.PRECISE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 @AutoConfigureMockMvc
@@ -151,6 +155,27 @@ public class UserControllerTest extends DbTestBase {
     }
 
     @Test
+    @Disabled
+    void shouldStoreAvatarOnAzureAndInBdWhenSavingAvatar() throws Exception {
+        //given
+        File file = new File("/Users/oresthaman/IdeaProjects/jelly-backend/src/test/resources/images/wp5182992.jpg");
+        byte[] content = Files.readAllBytes(file.toPath());
+        MockMultipartFile fi = new MockMultipartFile("image", content);
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .multipart(API_PATH + "/user/avatars")
+                        .file(fi)
+                        .header(HttpHeaders.AUTHORIZATION, idToken)
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getProfilePicture()).startsWith("https://jellyimagestore.blob.core.windows.net/avatars/");
+    }
+
+    @Test
     void shouldReturnBasicUserByEmail() throws Exception {
         //given
 
@@ -166,6 +191,23 @@ public class UserControllerTest extends DbTestBase {
         assertThat(basicUserResponse.getNickname()).isEqualTo("oresto101");
         assertThat(basicUserResponse.getProfilePicture()).isNotEmpty();
         assertThat(basicUserResponse.getIsOnline()).isTrue();
+    }
+
+    @Test
+    void shouldUpdateUserNickname() throws Exception {
+        //given
+        var nickname = "JOEMAMA";
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/nickname/" + nickname)
+                        .header(HttpHeaders.AUTHORIZATION, idToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getNickname()).isEqualTo(nickname);
     }
 
     @Test
@@ -200,6 +242,23 @@ public class UserControllerTest extends DbTestBase {
         //then
         final User user = userRepository.findAll().get(0);
         assertThat(user.getStealthChoice()).isEqualTo(StealthChoice.HIDE);
+    }
+
+    @Test
+    void shouldUpdateUserRegistrationToken() throws Exception {
+        //given
+        var registrationToken = "abc";
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(API_PATH + "/user/fcm/update/" + registrationToken)
+                        .header(HttpHeaders.AUTHORIZATION, idToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final User user = userRepository.findAll().get(0);
+        assertThat(user.getRegistrationToken()).isEqualTo(registrationToken);
     }
 
 

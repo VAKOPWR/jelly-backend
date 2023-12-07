@@ -12,9 +12,10 @@ import java.time.LocalDateTime;
 @Mapper
 public interface MessageMapper {
 
-    @Mapping(source = "user", target = "message.user")
-    @Mapping(source = "group", target = "message.group")
-    @Mapping(source = "timeSent", target = "message.timeSent")
+    @Mapping(source = "user", target = "user")
+    @Mapping(source = "group", target = "group")
+    @Mapping(source = "timeSent", target = "timeSent")
+    @Mapping(target = "id", ignore = true)
     Message createMessageRequestToMessage(final CreateMessageRequest createMessageRequest,
                                           final LocalDateTime timeSent,
                                           final User user,

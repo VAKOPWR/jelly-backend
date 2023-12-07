@@ -12,15 +12,15 @@ import java.io.IOException;
 @Service
 public class BlobStorageService {
 
-    private final BlobContainerClient blobContainerClient;
+    private final BlobContainerClient avatarContainerClient;
     public BlobStorageService(@Value("${azure.blob.connection-string}") final String connectionString, @Value("${azure.blob.container-name}") final String containerName){
         BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(connectionString)
                 .buildClient();
-        blobContainerClient = blobServiceClient.getBlobContainerClient(containerName);
+        avatarContainerClient = blobServiceClient.getBlobContainerClient(containerName);
     }
 
-    public void saveImage(final MultipartFile file, final String productId) throws IOException {
-        blobContainerClient.getBlobClient(productId).upload(file.getInputStream());
+    public void saveAvatar(final MultipartFile file, final String imageId) throws IOException {
+        avatarContainerClient.getBlobClient(imageId).upload(file.getInputStream());
     }
 }

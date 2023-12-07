@@ -41,7 +41,7 @@ public class UserStatus {
     private Boolean isOnline = false;
 
     @Column(name = "timestamp")
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "uid", referencedColumnName = "id")
@@ -55,9 +55,9 @@ public class UserStatus {
 
     }
 
-    @PrePersist
-    public void onInsert() {
-        timestamp = LocalDateTime.now();
+    public Boolean getIsOnline(){
+        Boolean isOnline = timestamp != null && ChronoUnit.MINUTES.between(timestamp, LocalDateTime.now()) < 5;
+        return isOnline;
     }
 
     public String getLastOnline() {
@@ -65,7 +65,7 @@ public class UserStatus {
         for (ChronoUnit unit : units) {
             long difference = unit.between(timestamp, LocalDateTime.now());
             if (difference != 0) {
-                return "Last online " + -difference + " " + unit.toString().toLowerCase() + " ago";
+                return -difference + " " + unit.toString().toLowerCase();
             }
         }
         return "Online";

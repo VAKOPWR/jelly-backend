@@ -8,6 +8,7 @@ import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,12 +18,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@Slf4j
 @AllArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    private final BlobStorageService blobStorageService;
+    @GetMapping
+    public ResponseEntity<String> pingUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/nickname/{nickname}")
+    public ResponseEntity<String> editNickname(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+                                               @PathVariable("nickname") final String newNickname) {
+        userService.updateNickname(decodedToken.getEmail(), newNickname);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/create")
     public ResponseEntity<User> createUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
@@ -32,7 +44,7 @@ public class UserController {
 
     @PostMapping(value = "/avatars", consumes = {"multipart/form-data"})
     public ResponseEntity<String> storeImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("image") final MultipartFile file) throws IOException {
-        blobStorageService.saveImage(file, decodedToken.getEmail());
+        userService.updateAvatar(decodedToken.getEmail(), file);
         return ResponseEntity.ok("");
     }
 
@@ -86,6 +98,19 @@ public class UserController {
             @PathVariable("stealthChoice") final StealthChoice stealthChoice
     ) {
         userService.updateStealthChoice(decodedToken.getEmail(), stealthChoice);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/getId/{email}")
+    public ResponseEntity<Integer> getIdByEmail(@PathVariable("email") String email){
+        final int id = userService.getUserByEmail(email).getId().intValue();
+        return ResponseEntity.ok(id);
+    }
+
+    @PutMapping("/fcm/update/{token}")
+    public ResponseEntity<Void> updateFcmToken(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+                                               @PathVariable("token") String token) {
+        userService.updateRegistrationToken(decodedToken.getEmail(), token);
         return ResponseEntity.ok().build();
     }
 
