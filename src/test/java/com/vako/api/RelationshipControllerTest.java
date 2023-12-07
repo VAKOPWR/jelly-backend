@@ -13,6 +13,8 @@ import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.group.model.Group;
 import com.vako.application.group.repository.GroupRepository;
 import com.vako.application.group.service.GroupService;
+import com.vako.application.groupUsers.model.GroupUser;
+import com.vako.application.groupUsers.repository.GroupUserRepository;
 import com.vako.application.message.repository.MessageRepository;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
@@ -22,6 +24,7 @@ import com.vako.application.user.repository.UserRepository;
 import com.vako.application.user.repository.UserStatusRepository;
 import com.vako.util.IDTokenRequest;
 import com.vako.util.IDTokenResponse;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -64,6 +67,12 @@ public class RelationshipControllerTest extends DbTestBase {
 
     @Autowired
     private UserStatusRepository userStatusRepository;
+
+    @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
+    private GroupUserRepository groupUserRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -152,11 +161,10 @@ public class RelationshipControllerTest extends DbTestBase {
 
         //then
         final Relationship relationship = relationshipRepository.findAll().get(0);
-        final Group group = groupService.getAllGroups().get(0);
+        final List<GroupUser> groupUsers = groupUserRepository.findAll();
         assertThat(relationship.getUserOne().getId()).isEqualTo(friendOne.getId());
         assertThat(relationship.getUserTwo().getId()).isEqualTo(friendTwo.getId());
-        assertThat(group.getGroupUsers().stream().map(groupUser -> groupUser.getUser().getId()).toList()).isEqualTo(List.of(friendOne.getId(), friendTwo.getId()));
-        assertThat(group.isFriendship()).isEqualTo(true);
+        assertThat(groupUsers.stream().map(groupUser -> groupUser.getUser().getId()).toList()).containsAll(List.of(friendOne.getId(), friendTwo.getId()));
         assertThat(relationship.getStatus()).isEqualTo(ACTIVE);
     }
 

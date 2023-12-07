@@ -12,7 +12,6 @@ import org.hibernate.annotations.ColumnDefault;
 @Data
 @NoArgsConstructor
 @Table(name = "Group_User")
-@NoArgsConstructor
 public class GroupUser {
 
     public GroupUser(final User user,

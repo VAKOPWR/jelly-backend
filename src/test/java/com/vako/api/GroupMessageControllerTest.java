@@ -127,7 +127,7 @@ public class GroupMessageControllerTest extends DbTestBase {
 
         //when
         mockMvc.perform(MockMvcRequestBuilders
-                        .put(API_PATH + "/chats/message/")
+                        .post(API_PATH + "/chats/message/")
                         .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(createMessageRequest)))
                 .andExpect(status().isOk())
