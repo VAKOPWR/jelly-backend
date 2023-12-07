@@ -4,10 +4,12 @@ import com.vako.application.group.model.Group;
 import com.vako.application.user.model.User;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "Group_User")
 public class GroupUser {
 

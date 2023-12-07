@@ -132,8 +132,7 @@ public class GroupMessageService {
     }
 
     public void createPersonalChat(Long userId1, Long userId2) {
-        Group group = new Group(true);
-        group = groupService.createGroup(group);
+        Group group = groupService.createGroup(new Group(true));
         groupUserService.createGroupUser(userId1, group.getId());
         groupUserService.createGroupUser(userId2, group.getId());
     }

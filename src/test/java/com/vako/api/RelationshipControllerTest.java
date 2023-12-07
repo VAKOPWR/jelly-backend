@@ -10,6 +10,10 @@ import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.fcm.FirebaseCloudMessagingService;
+import com.vako.application.group.model.Group;
+import com.vako.application.group.repository.GroupRepository;
+import com.vako.application.group.service.GroupService;
+import com.vako.application.message.repository.MessageRepository;
 import com.vako.application.relationship.model.Relationship;
 import com.vako.application.relationship.repository.RelationshipRepository;
 import com.vako.application.user.model.StealthChoice;
@@ -66,6 +70,9 @@ public class RelationshipControllerTest extends DbTestBase {
 
     @Autowired
     private RelationshipRepository relationshipRepository;
+
+    @Autowired
+    private GroupService groupService;
 
     @Autowired
     private ObjectMapper mapper;
@@ -145,8 +152,11 @@ public class RelationshipControllerTest extends DbTestBase {
 
         //then
         final Relationship relationship = relationshipRepository.findAll().get(0);
+        final Group group = groupService.getAllGroups().get(0);
         assertThat(relationship.getUserOne().getId()).isEqualTo(friendOne.getId());
         assertThat(relationship.getUserTwo().getId()).isEqualTo(friendTwo.getId());
+        assertThat(group.getGroupUsers().stream().map(groupUser -> groupUser.getUser().getId()).toList()).isEqualTo(List.of(friendOne.getId(), friendTwo.getId()));
+        assertThat(group.isFriendship()).isEqualTo(true);
         assertThat(relationship.getStatus()).isEqualTo(ACTIVE);
     }
 
