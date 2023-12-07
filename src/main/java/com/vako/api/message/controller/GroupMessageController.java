@@ -8,6 +8,7 @@ import com.vako.application.dto.MessageDTO;
 import com.vako.application.dto.NewGroupChatDTO;
 import com.vako.application.message.model.MessageStatus;
 import com.vako.application.message.service.GroupMessageService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +21,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/chats")
+@AllArgsConstructor
 public class GroupMessageController {
 
     private final GroupMessageService groupMessageService;
-
-    public GroupMessageController(GroupMessageService groupMessageService) {
-        this.groupMessageService = groupMessageService;
-    }
 
 //    @GetMapping
 //    public List<GroupMessageDTO> getChats(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken){
