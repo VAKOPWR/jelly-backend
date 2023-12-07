@@ -10,6 +10,13 @@ import org.hibernate.annotations.ColumnDefault;
 @Data
 @Table(name = "Group_User")
 public class GroupUser {
+
+    public GroupUser(final User user,
+                     final Group group) {
+        this.user = user;
+        this.group = group;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,11 +31,11 @@ public class GroupUser {
 
     @Column(name = "is_muted", nullable = false)
     @ColumnDefault(value = "false")
-    private boolean isMuted;
+    private boolean isMuted = false;
 
     @Column(name = "is_pinned", nullable = false)
     @ColumnDefault(value = "false")
-    private boolean isPinned;
+    private boolean isPinned = false;
 
 }
 

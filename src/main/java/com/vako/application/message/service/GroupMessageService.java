@@ -10,6 +10,7 @@ import com.vako.application.group.repository.GroupRepository;
 import com.vako.application.group.service.GroupService;
 import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.groupUsers.repository.GroupUserRepository;
+import com.vako.application.groupUsers.service.GroupUserService;
 import com.vako.application.message.mapper.MessageMapper;
 import com.vako.application.message.model.Message;
 import com.vako.application.message.model.MessageStatus;
@@ -33,8 +34,8 @@ import java.util.Optional;
 public class GroupMessageService {
 
     private final MessageMapper messageMapper;
-    private final GroupService groupRepository;
-    private final GroupUserRepository groupUserRepository;
+    private final GroupService groupService;
+    private final GroupUserService groupUserService;
     private final MessageRepository messageRepository;
     private final UserService userService;
 
@@ -128,26 +129,20 @@ public class GroupMessageService {
 //    }
 
     public void createMessage(final String email, final CreateMessageRequest createMessageRequest) {
-        final Message message = messageMapper.createMessageRequestToMessage(createMessageRequest, LocalDateTime.now());
+        final User user = userService.getUserByEmail(email);
+        final Group group = groupService.getGroupById(createMessageRequest.getGroupId());
+        final Message message = messageMapper.createMessageRequestToMessage(createMessageRequest, LocalDateTime.now(), user, group);
         messageRepository.save(message);
     }
-//
-//    public void createGroupUser(Long userId, Long groupId) {
-//        GroupUser groupUser = new GroupUser();
-//        groupUser.setUser(userRepository.getById(userId));
-//        groupUser.setGroup(groupRepository.getById(groupId));
-//        groupUser.setMuted(false);
-//        groupUser.setPinned(false);
-//        groupUserRepository.save(groupUser);
-//    }
-//
-//    public void createPersonalChat(Long userId1, Long userId2) {
-//        Group group = new Group();
-//        group.setFriendship(true);
-//        groupRepository.save(group);
-//        createGroupUser(userId1, group.getId());
-//        createGroupUser(userId2, group.getId());
-//    }
+
+
+
+    public void createPersonalChat(Long userId1, Long userId2) {
+        Group group = new Group(true);
+        groupService.createGroup(group);
+        groupUserService.createGroupUser(userId1, group.getId());
+        groupUserService.createGroupUser(userId2, group.getId());
+    }
 //
 //    public NewGroupChatDTO createGroup(List<Long> userIds, String groupName, String description){
 //        Group group = new Group();
