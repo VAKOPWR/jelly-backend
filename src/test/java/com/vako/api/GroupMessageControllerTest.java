@@ -11,6 +11,8 @@ import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.group.model.Group;
 import com.vako.application.group.repository.GroupRepository;
 import com.vako.application.group.service.GroupService;
+import com.vako.application.groupUsers.model.GroupUser;
+import com.vako.application.groupUsers.repository.GroupUserRepository;
 import com.vako.application.message.model.Message;
 import com.vako.application.message.repository.MessageRepository;
 import com.vako.application.relationship.model.Relationship;
@@ -70,6 +72,9 @@ public class GroupMessageControllerTest extends DbTestBase {
     private GroupRepository groupRepository;
 
     @Autowired
+    private GroupUserRepository groupUserRepository;
+
+    @Autowired
     private MessageRepository messageRepository;
 
     @Autowired
@@ -127,7 +132,7 @@ public class GroupMessageControllerTest extends DbTestBase {
 
         //when
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(API_PATH + "/chats/message/")
+                        .post(API_PATH + "/chats/message")
                         .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne)
                         .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(createMessageRequest)))
                 .andExpect(status().isOk())
@@ -135,11 +140,12 @@ public class GroupMessageControllerTest extends DbTestBase {
 
         //then
         final Group group = groupRepository.findAll().get(0);
+        final List<GroupUser> groupUsers = groupUserRepository.findAll();
         final Message message = messageRepository.findAll().get(0);
         assertThat(group.getId()).isEqualTo(newGroupChat.getGroupId());
         assertThat(group.getName()).isEqualTo(createGroupChatRequest.getName());
         assertThat(group.getDescription()).isEqualTo(createGroupChatRequest.getDescription());
-        assertThat(group.getGroupUsers().stream().map(groupUser -> groupUser.getUser().getId()).toList()).isEqualTo(createGroupChatRequest.getUserIds());
+        assertThat(groupUsers.stream().map(groupUser -> groupUser.getUser().getId()).toList()).isEqualTo(createGroupChatRequest.getUserIds());
         assertThat(message.getGroup()).isEqualTo(group);
         assertThat(message.getUser()).isEqualTo(friendOne);
         assertThat(message.getText()).isEqualTo(createMessageRequest.getText());

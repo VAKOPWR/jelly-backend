@@ -3,6 +3,7 @@ package com.vako.application.user.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.vako.application.groupUsers.model.GroupUser;
+import com.vako.application.message.model.Message;
 import com.vako.application.relationship.model.Relationship;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -49,7 +50,6 @@ public class User {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-
     private UserStatus userStatus;
 
     @OneToMany(mappedBy = "userOne", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -61,6 +61,12 @@ public class User {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Relationship> incomingRelationships = Collections.emptyList();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
+    private List<Message> sentMessages = Collections.emptyList();
 
     @JsonIgnore
     public List<User> getRelatedUsers() {

@@ -42,7 +42,7 @@ public class Message {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private MessageStatus messageStatus;
+    private MessageStatus messageStatus = MessageStatus.SENT;
 
     @Column(name = "time_sent", nullable = false, columnDefinition = "DATETIME")
     private LocalDateTime timeSent;

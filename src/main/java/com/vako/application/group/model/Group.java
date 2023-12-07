@@ -41,7 +41,7 @@ public class Group {
     @Column(name = "group_picture")
     private String groupPicture;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Message> messages;
