@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,9 +31,11 @@ public class GroupMessageController {
         return groupMessageService.getChats(userEmail);
     }
 
-    @GetMapping("/loadMessagesNew")
-    public List<MessageDTO> getMessagesNew(@RequestParam LocalDateTime lastChecked, @RequestBody List<Long> groupIds){
-        return groupMessageService.loadMessagesNew(lastChecked, groupIds);
+    @GetMapping("/loadMessagesNew/{lastChecked}")
+    public List<MessageDTO> getMessagesNew(@PathVariable String lastChecked, @RequestBody() List<Long> groupIds){
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+        LocalDateTime lastCheckedTime = LocalDateTime.parse(lastChecked, formatter);
+        return groupMessageService.loadMessagesNew(lastCheckedTime, groupIds);
     }
 
     @GetMapping("/loadMessagesPaged")
@@ -51,10 +54,11 @@ public class GroupMessageController {
         LocalDateTime time = LocalDateTime.parse((String) requestPayload.get("timeSent"));
 
         groupMessageService.createMessage(
-                (Long) requestPayload.get("senderId"),
-                (Long) requestPayload.get("groupId"),
+                parseLong(requestPayload.get("senderId")),
+                parseLong(requestPayload.get("groupId")),
                 (String) requestPayload.get("text"),
-                MessageStatus.SENT, time,
+                MessageStatus.SENT,
+                time,
                 (String) requestPayload.get("attachedPhoto"));
 
         return ResponseEntity.ok("Message sent successfully");
@@ -78,6 +82,16 @@ public class GroupMessageController {
             return groupMessageService.createGroup(userIdsLong, chatName, null);
         }
         return groupMessageService.createGroup(userIdsLong, chatName, description);
+    }
+
+    private Long parseLong(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        } else if (value instanceof String) {
+            return Long.valueOf((String) value);
+        } else {
+            throw new IllegalArgumentException("Invalid value for Long parsing");
+        }
     }
 
 }
