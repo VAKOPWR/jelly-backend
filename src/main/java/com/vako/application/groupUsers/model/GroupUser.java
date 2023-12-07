@@ -10,6 +10,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "Group_User")
 @NoArgsConstructor
 public class GroupUser {
