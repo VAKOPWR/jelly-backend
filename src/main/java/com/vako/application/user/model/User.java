@@ -1,11 +1,12 @@
 package com.vako.application.user.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vako.application.relationship.model.Relationship;
 import com.vako.application.groupUsers.model.GroupUser;
+import com.vako.application.relationship.model.Relationship;
 import jakarta.persistence.*;
-import lombok.*;
-import org.apache.commons.lang3.builder.HashCodeExclude;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Collections;
 import java.util.List;
