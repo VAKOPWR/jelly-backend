@@ -31,9 +31,7 @@ public class GroupUserService {
     }
 
 
-    public void createGroupUser(Long userId, Long groupId) {
-        groupUserRepository.save(new GroupUser(userService.getUserById(userId), groupService.getGroupById(groupId)));
-    }
+
 
 
     public void deleteGroupUsers(Long userId, Long groupId) {
