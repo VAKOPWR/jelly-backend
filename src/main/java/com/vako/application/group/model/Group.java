@@ -15,6 +15,15 @@ import java.util.Set;
 @Data
 @Table(name = "[Group]")
 public class Group {
+
+    public Group() {
+
+    }
+
+    public Group(final boolean isFriendship) {
+        this.isFriendship = isFriendship;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,7 +32,7 @@ public class Group {
     private String name;
 
     @Column(name = "is_friendship", nullable = false)
-    private boolean isFriendship;
+    private boolean isFriendship = false;
 
     @Column(name = "description")
     private String description;
