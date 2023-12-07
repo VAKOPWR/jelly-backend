@@ -6,6 +6,8 @@ import com.vako.application.dto.NewGroupChatDTO;
 import com.vako.application.group.mapper.GroupMapper;
 import com.vako.application.group.model.Group;
 import com.vako.application.group.repository.GroupRepository;
+import com.vako.application.groupUsers.model.GroupUser;
+import com.vako.application.groupUsers.repository.GroupUserRepository;
 import com.vako.application.groupUsers.service.GroupUserService;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
@@ -23,13 +25,9 @@ import java.util.Optional;
 public class GroupService {
 
     private final GroupMapper groupMapper;
-    private final GroupUserService groupUserService;
+    private final GroupUserRepository groupUserRepository;
     private final UserService userService;
     private final GroupRepository groupRepository;
-
-    public List<Group> getAllGroups() {
-        return groupRepository.findAll();
-    }
 
     public Group getGroupById(Long id) {
         return groupRepository.findById(id).orElseThrow();
@@ -39,21 +37,14 @@ public class GroupService {
         return groupRepository.save(group);
     }
 
-    public Group updateGroup(Long id, Group updatedGroup) throws ChangeSetPersister.NotFoundException {
-        Optional<Group> existingGroup = groupRepository.findById(id);
-
-        if (existingGroup.isPresent()) {
-            updatedGroup.setId(id);
-            return groupRepository.save(updatedGroup);
-        } else {
-            throw new ChangeSetPersister.NotFoundException();
-        }
+    public void createGroupUser(Long userId, Long groupId) {
+        groupUserRepository.save(new GroupUser(userService.getUserById(userId), getGroupById(groupId)));
     }
 
     public NewGroupChatDTO createGroup(final CreateGroupChatRequest createGroupChatRequest){
         final Group group = groupRepository.save(groupMapper.createGroupChatRequestToGroup(createGroupChatRequest));
         final List<ChatUserDTO> chatUserDTOS = createGroupChatRequest.getUserIds().stream().map(userId -> {
-            groupUserService.createGroupUser(userId, group.getId());
+            createGroupUser(userId, group.getId());
             User user = userService.getUserById(userId);
             return new ChatUserDTO(user.getId(), user.getNickname(), user.getProfilePicture());
         }).toList();
