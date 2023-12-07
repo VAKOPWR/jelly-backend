@@ -25,8 +25,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             "AND m1.group IN :groups")
     List<Message> findTopByGroupInOrderByTimeSentDesc(@Param("groups") List<Group> groups);
 
-    @Query("SELECT m FROM Message m WHERE m.group = :group ORDER BY m.timeSent DESC")
-    Page<Message> findMessageByGroup(@Param("group") Group group, Pageable pageable);
+    @Query("SELECT m FROM Message m WHERE m.group.id = :groupId ORDER BY m.timeSent DESC")
+    Page<Message> findMessageByGroup(@Param("groupId") Long groupId, Pageable pageable);
 
     @Query("SELECT message " +
             "FROM Message message " +

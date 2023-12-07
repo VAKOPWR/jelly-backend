@@ -109,16 +109,11 @@ public class GroupMessageService {
 //        return chats;
 //    }
 
-//    public List<MessageDTO> loadMessagesPaged(Long groupId, int page){
-//        Pageable pageable = PageRequest.of(page, 40);
-//        Group group = groupRepository.getReferenceById(groupId);
-//        Page<Message> messagePage = messageRepository.findMessageByGroup(group, pageable);
-//        List<MessageDTO> messageDTOS = new ArrayList<MessageDTO>();
-//        for (Message message:messagePage){
-//            messageDTOS.add(new MessageDTO(message.getUser().getId(), message.getGroup().getId(), message.getText(), message.getMessageStatus(), message.getTimeSent(), message.getAttachedPhoto()));
-//        }
-//        return messageDTOS;
-//    }
+    public List<MessageDTO> loadMessagesPaged(Long groupId, int page){
+        Pageable pageable = PageRequest.of(page, 40);
+        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, pageable);
+        return messagePage.stream().map(messageMapper::messageToMessageDTO).toList();
+    }
 
 //    public List<MessageDTO> loadMessagesNew(LocalDateTime timeSent, List<Long> groupIds){
 //        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(timeSent, groupIds);

@@ -113,11 +113,5 @@ public class UserController {
         userService.updateRegistrationToken(decodedToken.getEmail(), token);
         return ResponseEntity.ok().build();
     }
-
-    @GetMapping("/getId/{email}")
-    public ResponseEntity<Integer> getIdByEmail(@PathVariable("email") String email){
-        final int id = userService.getUserByEmail(email).getId().intValue();
-        return ResponseEntity.ok(id);
-    }
 }
 

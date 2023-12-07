@@ -40,13 +40,7 @@ public class GroupMessageController {
 //        return groupMessageService.loadMessagesNew(lastCheckedTime, groupIds);
 //    }
 //
-//    @GetMapping("/message")
-//    public List<MessageDTO> getMessagesByGroup(
-//            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
-//            @RequestParam Long groupId,
-//            @RequestParam int page) {
-//        return groupMessageService.loadMessagesPaged(groupId, page);
-//    }
+
 
     @PostMapping("/message")
     public ResponseEntity<Void> createMessage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
@@ -55,12 +49,7 @@ public class GroupMessageController {
         return ResponseEntity.ok().build();
     }
 
-//    @PutMapping( "/group/create")
-//    public ResponseEntity<Void> createGroupChat(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
-//                                                @RequestBody final CreateGroupChatRequest createGroupChatRequest) {
-//        groupMessageService.createGroup(decodedToken.getEmail(), createGroupChatRequest);
-//        return ResponseEntity.ok().build();
-//    }
+
 
 }
 
