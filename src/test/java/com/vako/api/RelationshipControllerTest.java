@@ -115,6 +115,7 @@ public class RelationshipControllerTest extends DbTestBase {
     @AfterEach
     void tearDownUser() {
         userRepository.deleteAll();
+        groupRepository.deleteAll();
     }
 
     private String getIdTokenForUid(String uid) throws FirebaseAuthException, IOException, InterruptedException {
