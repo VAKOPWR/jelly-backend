@@ -41,9 +41,9 @@ public class GroupMessageService {
     private final UserService userService;
 
 //    public List<GroupMessageDTO> getChats (String email){
-//        Optional<User> tempUser1 = userRepository.findByEmail(email);
-//        Long userId = tempUser1.get().getId();
-//        List<GroupUser> groupUserConnected = groupUserRepository.findByUser(userRepository.getReferenceById(userId));
+//        User tempUser1 = userService.getUserByEmail(email);
+//        Long userId = tempUser1.getId();
+//        List<GroupUser> groupUserConnected = groupUserService.findByUser(userRepository.getReferenceById(userId));
 //        List<Group> groups = groupRepository.findByGroupUsersIn(groupUserConnected);
 //        List<Message> lastMessages = messageRepository.findTopByGroupInOrderByTimeSentDesc(groups);
 //        List<GroupUser> groupUserNotConnected = groupUserRepository.findGroupUsersByGroupsAndUserNotIn(groups, userId);
@@ -115,14 +115,10 @@ public class GroupMessageService {
         return messagePage.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 
-//    public List<MessageDTO> loadMessagesNew(LocalDateTime timeSent, List<Long> groupIds){
-//        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(timeSent, groupIds);
-//        List<MessageDTO> messageDTOS = new ArrayList<MessageDTO>();
-//        for (Message message:messages){
-//            messageDTOS.add(new MessageDTO(message.getUser().getId(), message.getGroup().getId(), message.getText(), message.getMessageStatus(), message.getTimeSent(), message.getAttachedPhoto()));
-//        }
-//        return messageDTOS;
-//    }
+    public List<MessageDTO> loadMessagesNew(LocalDateTime timeSent, List<Long> groupIds){
+        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(timeSent, groupIds);
+        return messages.stream().map(messageMapper::messageToMessageDTO).toList();
+    }
 
     public void createMessage(final String email, final CreateMessageRequest createMessageRequest) {
         final User user = userService.getUserByEmail(email);
