@@ -3,17 +3,14 @@ package com.vako.api.group.controller;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.message.request.CreateGroupChatRequest;
 import com.vako.application.dto.MessageDTO;
-import com.vako.application.group.model.Group;
 import com.vako.application.group.service.GroupService;
 import com.vako.application.message.service.GroupMessageService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.ws.rs.QueryParam;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/group")
@@ -33,8 +30,8 @@ public class GroupController {
     public List<MessageDTO> getMessagesByGroup(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
             @PathVariable("groupId") Long groupId,
-            @RequestParam int page) {
-        return groupMessageService.loadMessagesPaged(groupId, page);
+            @QueryParam("pageSize") final Integer pageSize) {
+        return groupMessageService.loadMessagesPaged(groupId, pageSize);
     }
 
     @DeleteMapping("/{id}")

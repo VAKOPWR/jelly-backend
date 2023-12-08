@@ -45,13 +45,12 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.vako.application.relationship.model.RelationshipStatus.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-public class GroupMessageControllerTest extends DbTestBase {
+public class GroupControllerTest extends DbTestBase {
     private String idTokenFriendOne;
     private String idTokenFriendTwo;
 
@@ -66,22 +65,22 @@ public class GroupMessageControllerTest extends DbTestBase {
     private UserRepository userRepository;
 
     @Autowired
-    private GroupService groupService;
-
-    @Autowired
     private RelationshipRepository relationshipRepository;
 
     @Autowired
     private GroupRepository groupRepository;
 
     @Autowired
+    private GroupService groupService;
+
+    @Autowired
     private GroupUserRepository groupUserRepository;
 
     @Autowired
-    private GroupMessageService groupMessageService;
+    private MessageRepository messageRepository;
 
     @Autowired
-    private MessageRepository messageRepository;
+    private GroupMessageService groupMessageService;
 
     @Autowired
     private ObjectMapper mapper;
@@ -130,56 +129,99 @@ public class GroupMessageControllerTest extends DbTestBase {
     }
 
     @Test
-    void shouldCreateNewMessageInPersonalChatBetweenTwoFriends() throws Exception {
+    void shouldCreateNewGroupChatBetweenTwoFriends() throws Exception {
         //given
         relationshipRepository.save(new Relationship(friendOne, friendTwo));
         CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("TestGroup", "Descr", List.of(friendOne.getId(), friendTwo.getId()));
-        NewGroupChatDTO newGroupChat = groupService.createGroup(createGroupChatRequest);
-        final CreateMessageRequest createMessageRequest = new CreateMessageRequest(friendOne.getId(), groupService.getGroupById(newGroupChat.getGroupId()).getId(), "test");
 
         //when
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(API_PATH + "/chats/message")
+                        .post(API_PATH + "/group/create")
                         .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne)
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(createMessageRequest)))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(createGroupChatRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
 
         //then
         final Group group = groupRepository.findAll().get(0);
         final List<GroupUser> groupUsers = groupUserRepository.findAll();
-        final Message message = messageRepository.findAll().get(0);
-        assertThat(group.getId()).isEqualTo(newGroupChat.getGroupId());
         assertThat(group.getName()).isEqualTo(createGroupChatRequest.getName());
         assertThat(group.getDescription()).isEqualTo(createGroupChatRequest.getDescription());
         assertThat(groupUsers.stream().map(groupUser -> groupUser.getUser().getId()).toList()).isEqualTo(createGroupChatRequest.getUserIds());
-        assertThat(message.getGroup()).isEqualTo(group);
-        assertThat(message.getUser()).isEqualTo(friendOne);
-        assertThat(message.getText()).isEqualTo(createMessageRequest.getText());
     }
 
     @Test
-    void shouldGetMessagesNewOneGroupChatBetweenTwoFriends() throws Exception {
+    void shouldCreateNewGroupChatWithEmptyDescriptionAndEmptyNameBetweenTwoFriends() throws Exception {
         //given
         relationshipRepository.save(new Relationship(friendOne, friendTwo));
-        CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("TestGroup", "Descr", List.of(friendOne.getId(), friendTwo.getId()));
-        NewGroupChatDTO newGroupChat = groupService.createGroup(createGroupChatRequest);
-        final CreateMessageRequest createMessageRequest = new CreateMessageRequest(friendTwo.getId(), groupService.getGroupById(newGroupChat.getGroupId()).getId(), "test");
-        groupMessageService.createMessage(friendTwo.getEmail(), createMessageRequest);
-        List<Long> groupIds = List.of(newGroupChat.getGroupId());
+        CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("", "", List.of(friendOne.getId(), friendTwo.getId()));
 
         //when
-        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-                        .get(API_PATH + "/chats/message/new/" + LocalDateTime.now().minusMinutes(10))
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post(API_PATH + "/group/create")
                         .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne)
-                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(groupIds)))
+                        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).content(mapper.writeValueAsString(createGroupChatRequest)))
                 .andExpect(status().isOk())
                 .andReturn();
 
         //then
-        final Message message = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
-        assertThat(message.getGroup()).isEqualTo(groupService.getGroupById(newGroupChat.getGroupId()));
-        assertThat(message.getUser()).isEqualTo(friendTwo);
-        assertThat(message.getText()).isEqualTo(createMessageRequest.getText());
+        final Group group = groupRepository.findAll().get(0);
+        final List<GroupUser> groupUsers = groupUserRepository.findAll();
+        assertThat(group.getName()).isEqualTo(createGroupChatRequest.getName());
+        assertThat(group.getDescription()).isEqualTo(createGroupChatRequest.getDescription());
+        assertThat(groupUsers.stream().map(groupUser -> groupUser.getUser().getId()).toList()).isEqualTo(createGroupChatRequest.getUserIds());
+    }
+
+    @Test
+    void shouldGetMessageByGroupChat() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("Test", "Test", List.of(friendOne.getId(), friendTwo.getId()));
+        NewGroupChatDTO group = groupService.createGroup(createGroupChatRequest);
+        final CreateMessageRequest createMessageRequest = new CreateMessageRequest(friendOne.getId(), groupService.getGroupById(group.getGroupId()).getId(), "test");
+        groupMessageService.createMessage(friendOne.getEmail(), createMessageRequest);
+
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/group/message/" + group.getGroupId() + "?pageSize=20")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne))
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+        //then
+        final List<Message> messages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        assertThat(messages.get(0).getText()).isEqualTo(createMessageRequest.getText());
+        assertThat(messages.get(0).getGroup()).isEqualTo(groupService.getGroupById(group.getGroupId()));
+        assertThat(messages.get(0).getUser()).isEqualTo(friendOne);
+    }
+
+    @Test
+    void shouldGetMessagesByGroupChat() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("Test", "Test", List.of(friendOne.getId(), friendTwo.getId()));
+        NewGroupChatDTO group = groupService.createGroup(createGroupChatRequest);
+        final CreateMessageRequest createMessageRequest1 = new CreateMessageRequest(friendOne.getId(), groupService.getGroupById(group.getGroupId()).getId(), "test1");
+        final CreateMessageRequest createMessageRequest2 = new CreateMessageRequest(friendTwo.getId(), groupService.getGroupById(group.getGroupId()).getId(), "test2");
+        groupMessageService.createMessage(friendOne.getEmail(), createMessageRequest1);
+        groupMessageService.createMessage(friendTwo.getEmail(), createMessageRequest2);
+
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/group/message/" + group.getGroupId() + "?pageSize=20")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne))
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+        //then
+        final List<Message> messages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        assertThat(messages).hasSize(2);
+        assertThat(messages.get(0).getGroup()).isEqualTo(groupService.getGroupById(group.getGroupId()));
+        assertThat(messages.get(0).getUser()).isEqualTo(friendOne);
+        assertThat(messages.get(1).getUser()).isEqualTo(friendTwo);
     }
 }

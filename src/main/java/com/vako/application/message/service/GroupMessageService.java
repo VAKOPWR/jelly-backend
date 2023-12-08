@@ -34,6 +34,8 @@ import java.util.Optional;
 @AllArgsConstructor
 public class GroupMessageService {
 
+    private static final int DEFAULT_PAGE_SIZE = 10;
+
     private final MessageMapper messageMapper;
     private final GroupService groupService;
     private final GroupUserService groupUserService;
@@ -45,9 +47,9 @@ public class GroupMessageService {
         return groups.stream().map(messageMapper::groupToMessageDTO).toList();
     }
 
-    public List<MessageDTO> loadMessagesPaged(Long groupId, int page){
-        Pageable pageable = PageRequest.of(page, 40);
-        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, pageable);
+    public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageSize){
+        final int pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
+        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(0, pageSizeToUse));
         return messagePage.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 
