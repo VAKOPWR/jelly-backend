@@ -1,6 +1,7 @@
 package com.vako.application.message.mapper;
 
 import com.vako.api.message.request.CreateMessageRequest;
+import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
 import com.vako.application.group.model.Group;
 import com.vako.application.message.model.Message;
@@ -26,4 +27,5 @@ public interface MessageMapper {
     @Mapping(source = "group.id", target = "groupId")
     MessageDTO messageToMessageDTO(Message message);
 
+    GroupMessageDTO groupToMessageDTO(Group group);
 }

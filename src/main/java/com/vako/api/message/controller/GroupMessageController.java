@@ -26,10 +26,10 @@ public class GroupMessageController {
 
     private final GroupMessageService groupMessageService;
 
-//    @GetMapping
-//    public List<GroupMessageDTO> getChats(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken){
-//        return groupMessageService.getChats(decodedToken.getEmail());
-//    }
+    @GetMapping
+    public List<GroupMessageDTO> getChats(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken){
+        return groupMessageService.getChats(decodedToken.getEmail());
+    }
 
     @GetMapping("/message/new/{lastChecked}")
     public List<MessageDTO> getMessagesNew(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,

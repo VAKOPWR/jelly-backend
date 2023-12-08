@@ -51,6 +51,10 @@ public class GroupService {
         return new NewGroupChatDTO(group.getId(), chatUserDTOS);
     }
 
+    public List<Group> getCompleteGroupsByUserId(final Long userId) {
+        return groupRepository.findCompleteGroupsByUserId(userId);
+    }
+
     public void deleteGroup(Long id) {
         groupRepository.deleteById(id);
     }

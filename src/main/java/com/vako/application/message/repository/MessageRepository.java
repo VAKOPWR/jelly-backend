@@ -37,8 +37,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             @Param("sentTime") LocalDateTime sentTime,
             @Param("groupIds") List<Long> groupIds);
 
-
-
 }
 
 
