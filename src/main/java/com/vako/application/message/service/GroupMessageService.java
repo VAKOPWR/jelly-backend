@@ -95,12 +95,15 @@ public class GroupMessageService {
 
     public List<MessageDTO> loadMessagesNew(List<Long> groupIds, Long userId){
         List<GroupUser> groupUsers = groupUserRepository.findGroupUsersByUserIdAndGroupIds(userId, groupIds);
-        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(groupIds);
+        System.out.println(groupUsers);
+        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(groupUsers, groupIds);
         for (GroupUser groupUser: groupUsers){
             groupUser.setLastChecked(LocalDateTime.now());
+            groupUserRepository.save(groupUser);
         }
         return messages.stream().map(messageMapper::messageToMessageDTO).toList();
     }
+
 
     @Transactional
     public Long createMessage(final String email, final CreateMessageRequest createMessageRequest) {
