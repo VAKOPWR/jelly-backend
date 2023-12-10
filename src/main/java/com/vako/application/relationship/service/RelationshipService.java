@@ -3,6 +3,7 @@ package com.vako.application.relationship.service;
 import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
+import com.vako.application.group.service.GroupService;
 import com.vako.application.message.service.GroupMessageService;
 import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.relationship.model.Relationship;
@@ -45,6 +46,7 @@ public class RelationshipService {
 
     private final UserService userService;
 
+    private final GroupService groupService;
     private final GroupMessageService groupMessageService;
 
     private final FirebaseCloudMessagingService firebaseCloudMessagingService;
@@ -64,6 +66,7 @@ public class RelationshipService {
         final User deleter = userService.getUserByEmail(email);
         final int deletes = relationshipRepository.deleteByUserIds(deleter.getId(), id);
         if (deletes == 1) {
+            groupService.deleteGroupFriendship(deleter.getId(), id);
             log.info("Deleted friendship for users with ID's {}, {}", deleter.getId(), id);
         }
     }

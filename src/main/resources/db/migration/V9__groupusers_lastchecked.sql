@@ -1,1 +1,1 @@
-ALTER TABLE group_users ADD last_checked DATETIME;
+ALTER TABLE group_user ADD last_checked DATETIME;

@@ -25,5 +25,21 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Transactional
     @Query("update Group g set g.groupPicture = :imageUrl where g.id = :groupId")
     void updateImageUrl(@Param("groupId") final Long groupId, @Param("imageUrl") final String imageUrl);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM Group g " +
+            "WHERE g.id = (" +
+            "   SELECT g1.id " +
+            "   FROM GroupUser gu1 " +
+            "   JOIN GroupUser gu2 ON gu1.group.id = gu2.group.id " +
+            "   JOIN Group g1 ON gu1.group.id = g1.id " +
+            "   WHERE gu1.user.id = :userId1 AND gu2.user.id = :userId2 " +
+            "     AND g1.isFriendship = true" +
+            ")")
+    void deleteFriendshipGroup(
+            @Param("userId1") Long userId1,
+            @Param("userId2") Long userId2);
+
 }
 
