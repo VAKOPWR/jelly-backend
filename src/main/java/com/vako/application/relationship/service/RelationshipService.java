@@ -81,12 +81,9 @@ public class RelationshipService {
     }
 
     public List<BasicUserResponse> getPendingRequests(final String email) {
-        final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByStatus(email, PENDING);
+        final List<Relationship> pendingRelationships = relationshipRepository.getRelationshipsByFriendTwoStatus(email, PENDING);
         return pendingRelationships.stream()
-                .map(relationship -> {
-                    if (relationship.getUserOne().getEmail().equals(email)) return relationship.getUserTwo();
-                    else return relationship.getUserOne();
-                })
+                .map(Relationship::getUserOne)
                 .map(userMapper::userToBasicUserResponse)
                 .toList();
     }

@@ -18,6 +18,10 @@ public interface RelationshipRepository extends JpaRepository<Relationship, Long
             "where f.status = :relationshipStatus and (f.userOne.email = :email or f.userTwo.email = :email)" )
     List<Relationship> getRelationshipsByStatus(@Param("email") final String email, @Param("relationshipStatus") final RelationshipStatus relationshipStatus);
 
+    @Query("select f from Relationship f " +
+            "where f.status = :relationshipStatus and (f.userTwo.email = :email)" )
+    List<Relationship> getRelationshipsByFriendTwoStatus(@Param("email") final String email, @Param("relationshipStatus") final RelationshipStatus relationshipStatus);
+
     @Modifying
     @Transactional
     @Query("update Relationship f " +
