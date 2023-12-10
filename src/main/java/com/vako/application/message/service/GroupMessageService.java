@@ -17,10 +17,12 @@ import com.vako.application.user.service.UserService;
 import com.vako.exception.JellyException;
 import com.vako.exception.JellyExceptionType;
 import jakarta.transaction.Transactional;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +41,6 @@ public class GroupMessageService {
     private final MessageMapper messageMapper;
     private final GroupService groupService;
     private final GroupUserService groupUserService;
-    private final GroupUserRepository groupUserRepository;
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final BlobStorageService blobStorageService;

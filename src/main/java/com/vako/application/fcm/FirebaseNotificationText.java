@@ -13,7 +13,7 @@ public enum FirebaseNotificationText {
     private final String title;
     private final String message;
 
-    private FirebaseNotificationText(String title, String message) {
+    FirebaseNotificationText(String title, String message) {
         this.title = title;
         this.message = message;
     }
