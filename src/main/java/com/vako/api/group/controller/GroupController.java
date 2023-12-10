@@ -37,14 +37,6 @@ public class GroupController {
         return ResponseEntity.ok("");
     }
 
-    @GetMapping("/message/{groupId}")
-    public List<MessageDTO> getMessagesByGroup(
-            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
-            @PathVariable("groupId") Long groupId,
-            @QueryParam("pageNo") final Integer pageNo) {
-        return groupMessageService.loadMessagesPaged(groupId, pageNo);
-    }
-
     @DeleteMapping("/{id}")
     public void deleteGroup(@PathVariable Long id) {
         groupService.deleteGroup(id);

@@ -63,7 +63,9 @@ public class RelationshipService {
     public void deleteFriendship(final String email, final Long id) {
         final User deleter = userService.getUserByEmail(email);
         final int deletes = relationshipRepository.deleteByUserIds(deleter.getId(), id);
-        if (deletes == 1) log.info("Deleted friendship for users with ID's {}, {}", deleter.getId(), id);
+        if (deletes == 1) {
+            log.info("Deleted friendship for users with ID's {}, {}", deleter.getId(), id);
+        }
     }
 
     public List<User> getActiveFriends(final String email) {

@@ -5,6 +5,8 @@ import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
 import com.vako.application.group.model.Group;
 import com.vako.application.group.service.GroupService;
+import com.vako.application.groupUsers.model.GroupUser;
+import com.vako.application.groupUsers.repository.GroupUserRepository;
 import com.vako.application.groupUsers.service.GroupUserService;
 import com.vako.application.image.BlobStorageService;
 import com.vako.application.message.mapper.MessageMapper;
@@ -42,18 +44,21 @@ public class GroupMessageService {
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final BlobStorageService blobStorageService;
+    private final GroupUserRepository groupUserRepository;
+
     @Autowired
     public GroupMessageService(@Value("${azure.blob.url.message}")String messageImageUrl,
                                MessageMapper messageMapper,
                                GroupService groupService,
                                GroupUserService groupUserService,
-                               MessageRepository messageRepository,
+                               GroupUserRepository groupUserRepository, MessageRepository messageRepository,
                                UserService userService,
                                BlobStorageService blobStorageService) {
         this.messageImageUrl = messageImageUrl;
         this.messageMapper = messageMapper;
         this.groupService = groupService;
         this.groupUserService = groupUserService;
+        this.groupUserRepository = groupUserRepository;
         this.messageRepository = messageRepository;
         this.userService = userService;
         this.blobStorageService = blobStorageService;
@@ -83,13 +88,17 @@ public class GroupMessageService {
         return getChats(email).stream().filter(groupMessageDTO -> !ids.contains(groupMessageDTO.getGroupId())).toList();
     }
 
-    public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageNo){
-        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(pageNo, DEFAULT_PAGE_SIZE));
+    public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageToLoad){
+        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(pageToLoad, 40));
         return messagePage.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 
-    public List<MessageDTO> loadMessagesNew(LocalDateTime timeSent, List<Long> groupIds){
-        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(timeSent, groupIds);
+    public List<MessageDTO> loadMessagesNew(List<Long> groupIds, Long userId){
+        List<GroupUser> groupUsers = groupUserRepository.findGroupUsersByUserIdAndGroupIds(userId, groupIds);
+        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(groupUsers, groupIds);
+        for (GroupUser groupUser: groupUsers){
+            groupUser.setLastChecked(LocalDateTime.now());
+        }
         return messages.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 
