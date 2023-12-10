@@ -44,6 +44,8 @@ public class GroupMessageService {
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final BlobStorageService blobStorageService;
+    private final GroupUserRepository groupUserRepository;
+
     @Autowired
     public GroupMessageService(@Value("${azure.blob.url.message}")String messageImageUrl,
                                MessageMapper messageMapper,

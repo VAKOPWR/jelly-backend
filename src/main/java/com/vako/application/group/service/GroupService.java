@@ -89,4 +89,8 @@ public class GroupService {
     public void deleteGroup(Long id) {
         groupRepository.deleteById(id);
     }
+
+    public void deleteGroupFriendship(Long userId1, Long userId2){
+
+    }
 }
