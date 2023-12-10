@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class GroupMessageService {
     }
 
     public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageToLoad){
-        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(pageToLoad, 40));
+        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(pageToLoad, 400));
         return messagePage.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 
@@ -106,11 +107,12 @@ public class GroupMessageService {
 
 
     @Transactional
-    public Long createMessage(final String email, final CreateMessageRequest createMessageRequest) {
+    public String createMessage(final String email, final CreateMessageRequest createMessageRequest) {
         final User user = userService.getUserByEmail(email);
         final Group group = groupService.getGroupById(createMessageRequest.getGroupId());
         final Message message = messageMapper.createMessageRequestToMessage(createMessageRequest, LocalDateTime.now(), user, group);
-        return messageRepository.save(message).getId();
+        messageRepository.save(message).getId();
+        return message.getTimeSent().toString();
     }
 
     public void attachImage(final String email, final Long messageId, final MultipartFile file) throws IOException {
