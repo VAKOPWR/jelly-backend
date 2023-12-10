@@ -56,7 +56,8 @@ public class RelationshipService {
             throw new JellyException(JellyExceptionType.RELATIONSHIP_ALREADY_EXISTS);
         final User recipient = userService.getUserById(id);
         relationshipRepository.save(new Relationship(sender, recipient));
-        firebaseCloudMessagingService.sendMessage(SENT_FRIEND_REQUEST.getMessageWithParams(sender.getNickname()), recipient.getRegistrationToken());
+        if (recipient.getRegistrationToken()!=null)
+            firebaseCloudMessagingService.sendMessage(SENT_FRIEND_REQUEST.getMessageWithParams(sender.getNickname()), recipient.getRegistrationToken());
     }
 
     @Transactional
@@ -98,7 +99,7 @@ public class RelationshipService {
         final User sender = userService.getUserById(senderId);
         if (updated == 1) {
             log.info("Set users with ids: {}, {} to status ACTIVE", senderId, acceptee.getId());
-            firebaseCloudMessagingService.sendMessage(ACCEPTED_FRIEND_REQUEST.getMessageWithParams(acceptee.getNickname()), sender.getRegistrationToken());
+            if (sender.getRegistrationToken()!=null) firebaseCloudMessagingService.sendMessage(ACCEPTED_FRIEND_REQUEST.getMessageWithParams(acceptee.getNickname()), sender.getRegistrationToken());
         }
 
     }
