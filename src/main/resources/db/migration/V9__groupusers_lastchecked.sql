@@ -1,0 +1,1 @@
+ALTER TABLE group_users ADD last_checked DATETIME;

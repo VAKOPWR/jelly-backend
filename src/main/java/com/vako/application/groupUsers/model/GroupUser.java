@@ -1,6 +1,7 @@
 package com.vako.application.groupUsers.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.google.api.client.util.DateTime;
 import com.vako.application.group.model.Group;
 import com.vako.application.user.model.User;
 import jakarta.persistence.*;
@@ -9,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -44,5 +47,7 @@ public class GroupUser {
     @ColumnDefault(value = "false")
     private boolean isPinned = false;
 
+    @Column(name = "last_checked")
+    private LocalDateTime lastChecked;
 }
 

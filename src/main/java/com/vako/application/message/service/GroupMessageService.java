@@ -5,6 +5,8 @@ import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
 import com.vako.application.group.model.Group;
 import com.vako.application.group.service.GroupService;
+import com.vako.application.groupUsers.model.GroupUser;
+import com.vako.application.groupUsers.repository.GroupUserRepository;
 import com.vako.application.groupUsers.service.GroupUserService;
 import com.vako.application.image.BlobStorageService;
 import com.vako.application.message.mapper.MessageMapper;
@@ -15,12 +17,10 @@ import com.vako.application.user.service.UserService;
 import com.vako.exception.JellyException;
 import com.vako.exception.JellyExceptionType;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +39,7 @@ public class GroupMessageService {
     private final MessageMapper messageMapper;
     private final GroupService groupService;
     private final GroupUserService groupUserService;
+    private final GroupUserRepository groupUserRepository;
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final BlobStorageService blobStorageService;
@@ -47,13 +48,14 @@ public class GroupMessageService {
                                MessageMapper messageMapper,
                                GroupService groupService,
                                GroupUserService groupUserService,
-                               MessageRepository messageRepository,
+                               GroupUserRepository groupUserRepository, MessageRepository messageRepository,
                                UserService userService,
                                BlobStorageService blobStorageService) {
         this.messageImageUrl = messageImageUrl;
         this.messageMapper = messageMapper;
         this.groupService = groupService;
         this.groupUserService = groupUserService;
+        this.groupUserRepository = groupUserRepository;
         this.messageRepository = messageRepository;
         this.userService = userService;
         this.blobStorageService = blobStorageService;
@@ -83,14 +85,17 @@ public class GroupMessageService {
         return getChats(email).stream().filter(groupMessageDTO -> !ids.contains(groupMessageDTO.getGroupId())).toList();
     }
 
-    public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageSize){
-        final int pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
-        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(0, pageSizeToUse));
+    public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageToLoad){
+        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(pageToLoad, 40));
         return messagePage.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 
-    public List<MessageDTO> loadMessagesNew(LocalDateTime timeSent, List<Long> groupIds){
-        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(timeSent, groupIds);
+    public List<MessageDTO> loadMessagesNew(List<Long> groupIds, Long userId){
+        List<GroupUser> groupUsers = groupUserRepository.findGroupUsersByUserIdAndGroupIds(userId, groupIds);
+        List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(groupUsers, groupIds);
+        for (GroupUser groupUser: groupUsers){
+            groupUser.setLastChecked(LocalDateTime.now());
+        }
         return messages.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 

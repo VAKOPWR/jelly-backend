@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,13 +30,11 @@ public class GroupMessageController {
         return ResponseEntity.ok(groupMessageDTOS);
     }
 
-    @GetMapping("/message/new/{lastChecked}")
+    @PostMapping("/message/new/{userId}")
     public ResponseEntity<List<MessageDTO>> getMessagesNew(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
-                                           @PathVariable("lastChecked") String lastChecked,
+                                           @PathVariable Long userId,
                                            @RequestBody List<Long> groupIds){
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-        LocalDateTime lastCheckedTime = LocalDateTime.parse(lastChecked, formatter);
-        final List<MessageDTO> messageDTOS = groupMessageService.loadMessagesNew(lastCheckedTime, groupIds);
+        final List<MessageDTO> messageDTOS = groupMessageService.loadMessagesNew(groupIds, userId);
         return ResponseEntity.ok(messageDTOS);
     }
 
@@ -61,6 +60,14 @@ public class GroupMessageController {
                                             @PathVariable("messageId") final Long messageId) throws IOException {
         groupMessageService.attachImage(decodedToken.getEmail(), messageId, file);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/message/{groupId}")
+    public List<MessageDTO> getMessagesByGroup(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+            @PathVariable("groupId") Long groupId,
+            @QueryParam("pageToLoad") final Integer pageToLoad) {
+        return groupMessageService.loadMessagesPaged(groupId, pageToLoad);
     }
 }
 

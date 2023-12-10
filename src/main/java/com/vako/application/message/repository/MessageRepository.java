@@ -1,6 +1,7 @@
 package com.vako.application.message.repository;
 
 import com.vako.application.group.model.Group;
+import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.message.model.Message;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
@@ -32,12 +33,18 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT message " +
             "FROM Message message " +
-            "WHERE message.timeSent > :sentTime " +
-            "AND message.group.id IN :groupIds " +
+            "WHERE message.group.id IN :groupIds " +
+            "AND message.timeSent > (" +
+            "   SELECT groupUser.lastChecked " +
+            "   FROM GroupUser groupUser " +
+            "   WHERE groupUser.group.id = message.group.id " +
+            ") " +
             "ORDER BY message.group.id, message.timeSent ASC")
     List<Message> findMessagesAfterTimeInGroups(
-            @Param("sentTime") LocalDateTime sentTime,
+            @Param("groupUsers") List<GroupUser> groupUsers,
             @Param("groupIds") List<Long> groupIds);
+
+
 
     @Modifying
     @Transactional
