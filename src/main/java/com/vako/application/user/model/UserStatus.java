@@ -65,7 +65,7 @@ public class UserStatus {
         for (ChronoUnit unit : units) {
             long difference = unit.between(timestamp, LocalDateTime.now());
             if (difference != 0) {
-                return -difference + " " + unit.toString().toLowerCase();
+                return -difference + String.valueOf(unit.toString().charAt(0));
             }
         }
         return "Online";
