@@ -23,13 +23,13 @@ public enum FirebaseNotificationText {
                 .setNotification(Notification.builder()
                         .setTitle(title)
                         .setBody(String.format(message, sender))
-                        .build())
-                .setAndroidConfig(
-                        AndroidConfig.builder()
-                                .setNotification(AndroidNotification.builder()
-                                        .setClickAction(name())
-                                        .build())
-                                .build()
-                );
+                        .build());
+//                .setAndroidConfig(
+//                        AndroidConfig.builder()
+//                                .setNotification(AndroidNotification.builder()
+//                                        .setClickAction(name())
+//                                        .build())
+//                                .build()
+//                );
     }
 }
