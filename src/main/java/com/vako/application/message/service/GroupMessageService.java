@@ -83,9 +83,8 @@ public class GroupMessageService {
         return getChats(email).stream().filter(groupMessageDTO -> !ids.contains(groupMessageDTO.getGroupId())).toList();
     }
 
-    public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageSize){
-        final int pageSizeToUse = pageSize == null ? DEFAULT_PAGE_SIZE : pageSize;
-        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(0, pageSizeToUse));
+    public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageNo){
+        Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(pageNo, DEFAULT_PAGE_SIZE));
         return messagePage.stream().map(messageMapper::messageToMessageDTO).toList();
     }
 

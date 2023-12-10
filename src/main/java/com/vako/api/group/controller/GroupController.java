@@ -41,8 +41,8 @@ public class GroupController {
     public List<MessageDTO> getMessagesByGroup(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
             @PathVariable("groupId") Long groupId,
-            @QueryParam("pageSize") final Integer pageSize) {
-        return groupMessageService.loadMessagesPaged(groupId, pageSize);
+            @QueryParam("pageNo") final Integer pageNo) {
+        return groupMessageService.loadMessagesPaged(groupId, pageNo);
     }
 
     @DeleteMapping("/{id}")
