@@ -22,7 +22,7 @@ public class FirebaseCloudMessagingService {
         try {
             return firebaseMessagingService.send(message);
         }
-        catch (FirebaseMessagingException ex) {
+        catch (Exception ex) {
             log.error("Error sending message: {}", ex.getMessage());
         }
         return "";
