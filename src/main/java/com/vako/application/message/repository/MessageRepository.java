@@ -41,7 +41,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             ") " +
             "ORDER BY message.group.id, message.timeSent ASC")
     List<Message> findMessagesAfterTimeInGroups(
-            @Param("groupUsers") List<GroupUser> groupUsers,
             @Param("groupIds") List<Long> groupIds);
 
 
