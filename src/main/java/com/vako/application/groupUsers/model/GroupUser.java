@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.vako.application.group.model.Group;
 import com.vako.application.user.model.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -11,6 +13,8 @@ import org.hibernate.annotations.ColumnDefault;
 @Entity
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Table(name = "Group_User")
 public class GroupUser {
 

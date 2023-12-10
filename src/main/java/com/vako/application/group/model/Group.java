@@ -10,7 +10,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.Comparator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -52,4 +54,7 @@ public class Group {
     @JsonIgnore
     private Set<GroupUser> groupUsers;
 
+    public Message getLastSentMessage() {
+        return messages.stream().min(Comparator.comparing(Message::getTimeSent)).orElse(new Message());
+    }
 }

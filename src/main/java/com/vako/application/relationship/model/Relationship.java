@@ -7,6 +7,8 @@ import lombok.*;
 
 @Entity
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Data
 @Table(name = "relationship")
 @EqualsAndHashCode

@@ -15,10 +15,13 @@ public class GroupMessageDTO {
 
     private Long groupId;
     private String groupName;
+
     private boolean isPinned;
     private boolean isMuted;
+
     private String picture;
     private String description;
+
     private boolean isFriendship;
     private Long friendId;
     private Long lastMessageSenderId;

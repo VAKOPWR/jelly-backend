@@ -9,6 +9,7 @@ import com.vako.api.message.request.CreateGroupChatRequest;
 import com.vako.api.message.request.CreateMessageRequest;
 import com.vako.application.dto.ChatUserDTO;
 import com.vako.application.dto.GroupMessageDTO;
+import com.vako.application.dto.MessageDTO;
 import com.vako.application.dto.NewGroupChatDTO;
 import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.group.model.Group;
@@ -159,7 +160,7 @@ public class GroupMessageControllerTest extends DbTestBase {
         assertThat(message.getGroup()).isEqualTo(groups.get(0));
         assertThat(message.getUser()).isEqualTo(friendOne);
         assertThat(message.getText()).isEqualTo(createMessageRequest.getText());
-        assertThat(groups).hasSize(2); // TODO: fix creation of personal chat
+        assertThat(groups).hasSize(1);
     }
 
     @Test
@@ -181,16 +182,18 @@ public class GroupMessageControllerTest extends DbTestBase {
                 .andReturn();
 
         //then
-        final Message message = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
-        assertThat(message.getGroup()).isEqualTo(groupService.getGroupById(newGroupChat.getGroupId()));
-        assertThat(message.getUser()).isEqualTo(friendTwo);
+        final List<MessageDTO> messages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        final MessageDTO message = messages.get(0);
+        assertThat(message.getGroupId()).isEqualTo(newGroupChat.getGroupId());
+        assertThat(message.getSenderId()).isEqualTo(friendTwo.getId());
         assertThat(message.getText()).isEqualTo(createMessageRequest.getText());
     }
 
     @Test
     void shouldGetChatsBetweenTwoFriends() throws Exception {
         //given
-        relationshipRepository.save(new Relationship(friendOne, friendTwo)); // here should be 1 personal chat created
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        CreateGroupChatRequest personalChatRequest = new CreateGroupChatRequest(null, null, List.of(friendOne.getId(), friendTwo.getId()));
 
         //second chat
         CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("TestGroup2", "Descr2", List.of(friendOne.getId(), friendTwo.getId()));
@@ -218,15 +221,42 @@ public class GroupMessageControllerTest extends DbTestBase {
 
         //then
         final List<GroupMessageDTO> groupMessages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
-        assertThat(groupMessages).hasSize(3); // For now creates only 2, but should create 3 TODO FIX
-        // this assertion now check not personal chat, but first group chat
+        assertThat(groupMessages).hasSize(2);
         assertThat(groupMessages.get(0).getGroupId()).isEqualTo(SecondGroupChat.getGroupId());
-        assertThat(groupMessages.get(0).getGroupUsers().stream().map(ChatUserDTO::getId).toList()).isEqualTo(List.of(friendOne.getId(), friendTwo.getId()));
+        assertThat(groupMessages.get(0).getGroupUsers().stream().map(ChatUserDTO::getId).toList()).containsExactlyInAnyOrder(friendOne.getId(), friendTwo.getId());
         assertThat(groupMessages.get(0).getGroupName()).isEqualTo(createGroupChatRequest.getName());
         assertThat(groupMessages.get(0).getDescription()).isEqualTo(createGroupChatRequest.getDescription());
         assertThat(groupMessages.get(0).isFriendship()).isEqualTo(false);
         assertThat(groupMessages.get(0).getLastMessageMessagesStatus()).isEqualTo(MessageStatus.SENT);
         assertThat(groupMessages.get(0).getLastMessageText()).isEqualTo(createMessageRequestForSecondChat.getText());
         assertThat(groupMessages.get(1).getGroupId()).isEqualTo(ThirdGroupChat.getGroupId());
+    }
+
+    @Test
+    void shouldReturnGroupMessageDTOWithCorrectParams() throws Exception {
+        //given
+        final Group group = groupRepository.save(new Group(true));
+        final GroupUser groupUser1 = groupUserRepository.save(GroupUser.builder()
+                        .group(group)
+                        .user(friendOne)
+                        .isMuted(true)
+                        .isPinned(true)
+                .build());
+        final GroupUser groupUser2 = groupUserRepository.save(new GroupUser(friendTwo, group));
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/chats")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendOne))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<GroupMessageDTO> groupMessages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        final GroupMessageDTO groupMessageDTO = groupMessages.get(0);
+        assertThat(groupMessageDTO.getGroupName()).isEqualTo(friendTwo.getNickname());
+        assertThat(groupMessageDTO.isMuted()).isTrue();
+        assertThat(groupMessageDTO.isPinned()).isTrue();
+        assertThat(groupMessageDTO.getFriendId()).isEqualTo(friendTwo.getId());
     }
 }

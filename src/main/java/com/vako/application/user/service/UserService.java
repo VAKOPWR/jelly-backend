@@ -46,7 +46,7 @@ public class UserService {
     private final UserStatusRepository userStatusRepository;
 
     @Autowired
-    public UserService(@Value("${azure.blob.url}")final String avatarUrl,
+    public UserService(@Value("${azure.blob.url.avatars}")final String avatarUrl,
                        final BlobStorageService blobStorageService,
                        final UserMapper userMapper,
                        final UserRepository userRepository,

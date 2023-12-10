@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.vako.DbTestBase;
 import com.vako.api.message.request.CreateGroupChatRequest;
 import com.vako.api.message.request.CreateMessageRequest;
+import com.vako.application.dto.MessageDTO;
 import com.vako.application.dto.NewGroupChatDTO;
 import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.group.model.Group;
@@ -191,10 +192,10 @@ public class GroupControllerTest extends DbTestBase {
 
 
         //then
-        final List<Message> messages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        final List<MessageDTO> messages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
         assertThat(messages.get(0).getText()).isEqualTo(createMessageRequest.getText());
-        assertThat(messages.get(0).getGroup()).isEqualTo(groupService.getGroupById(group.getGroupId()));
-        assertThat(messages.get(0).getUser()).isEqualTo(friendOne);
+        assertThat(messages.get(0).getGroupId()).isEqualTo(group.getGroupId());
+        assertThat(messages.get(0).getSenderId()).isEqualTo(friendOne.getId());
     }
 
     @Test
@@ -218,10 +219,10 @@ public class GroupControllerTest extends DbTestBase {
 
 
         //then
-        final List<Message> messages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        final List<MessageDTO> messages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
         assertThat(messages).hasSize(2);
-        assertThat(messages.get(0).getGroup()).isEqualTo(groupService.getGroupById(group.getGroupId()));
-        assertThat(messages.get(0).getUser()).isEqualTo(friendOne);
-        assertThat(messages.get(1).getUser()).isEqualTo(friendTwo);
+        assertThat(messages.get(0).getGroupId()).isEqualTo(group.getGroupId());
+        assertThat(messages.get(0).getSenderId()).isEqualTo(friendTwo.getId());
+        assertThat(messages.get(1).getSenderId()).isEqualTo(friendOne.getId());
     }
 }

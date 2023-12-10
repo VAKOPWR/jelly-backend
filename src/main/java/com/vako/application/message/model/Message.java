@@ -1,6 +1,7 @@
 package com.vako.application.message.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.vako.application.group.model.Group;
 import com.vako.application.user.model.User;
@@ -26,14 +27,14 @@ public class Message {
     @ManyToOne
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JsonBackReference
     @JoinColumn(name = "sender_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @ManyToOne
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JsonBackReference
+    @JsonIgnore
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
