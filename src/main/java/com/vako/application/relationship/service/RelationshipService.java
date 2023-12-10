@@ -49,7 +49,7 @@ public class RelationshipService {
 
     private final FirebaseCloudMessagingService firebaseCloudMessagingService;
 
-
+    @Transactional
     public void sendFriendRequest(final String senderEmail, final Long id) {
         final User sender = userService.getUserByIdentifier(senderEmail);
         if (relationshipRepository.getRelationshipByUserIds(sender.getId(), id).isPresent())
@@ -88,6 +88,7 @@ public class RelationshipService {
                 .toList();
     }
 
+    @Transactional
     public void acceptFriendRequest(final String accepteeEmail, final Long senderId) {
         final User acceptee = userService.getUserByEmail(accepteeEmail);
         groupMessageService.createPersonalChat(acceptee.getId(), senderId);
