@@ -58,10 +58,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class GroupMessageControllerTest extends DbTestBase {
     private String idTokenFriendOne;
     private String idTokenFriendTwo;
+    private String idTokenFriendThree;
 
     private User friendOne;
 
     private User friendTwo;
+    private User friendThree;
 
     @MockBean
     private FirebaseCloudMessagingService firebaseMessaging;
@@ -97,6 +99,7 @@ public class GroupMessageControllerTest extends DbTestBase {
     public void setUp() throws FirebaseAuthException, IOException, InterruptedException {
         idTokenFriendOne = getIdTokenForUid(UID_1);
         idTokenFriendTwo = getIdTokenForUid(UID_2);
+        idTokenFriendThree = getIdTokenForUid(UID_3);
     }
 
     @BeforeEach
@@ -114,6 +117,12 @@ public class GroupMessageControllerTest extends DbTestBase {
                 .andExpect(status().isOk())
                 .andReturn();
         friendTwo = mapper.readValue(user2Response.getResponse().getContentAsString(), User.class);
+        MvcResult user3Response = mockMvc.perform(MockMvcRequestBuilders
+                        .post(API_PATH + "/user/create")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendThree))
+                .andExpect(status().isOk())
+                .andReturn();
+        friendThree = mapper.readValue(user3Response.getResponse().getContentAsString(), User.class);
     }
 
     @AfterEach
@@ -230,6 +239,41 @@ public class GroupMessageControllerTest extends DbTestBase {
         assertThat(groupMessages.get(0).getLastMessageMessagesStatus()).isEqualTo(MessageStatus.SENT);
         assertThat(groupMessages.get(0).getLastMessageText()).isEqualTo(createMessageRequestForSecondChat.getText());
         assertThat(groupMessages.get(1).getGroupId()).isEqualTo(ThirdGroupChat.getGroupId());
+    }
+
+    @Test
+    void shouldNotReturnAnyChatsWhenUserIsNotInGroup() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        CreateGroupChatRequest personalChatRequest = new CreateGroupChatRequest(null, null, List.of(friendOne.getId(), friendTwo.getId()));
+
+        //second chat
+        CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("TestGroup2", "Descr2", List.of(friendOne.getId(), friendTwo.getId()));
+        NewGroupChatDTO SecondGroupChat = groupService.createGroup(createGroupChatRequest);
+
+        //one message in second chat
+        final CreateMessageRequest createMessageRequestForSecondChat = new CreateMessageRequest(friendTwo.getId(), groupService.getGroupById(SecondGroupChat.getGroupId()).getId(), "test2");
+        groupMessageService.createMessage(friendTwo.getEmail(), createMessageRequestForSecondChat);
+
+
+        //third chat between two friends
+        CreateGroupChatRequest createGroupChatRequestThird = new CreateGroupChatRequest("TestGroup3", "Descr3", List.of(friendOne.getId(), friendTwo.getId()));
+        NewGroupChatDTO ThirdGroupChat = groupService.createGroup(createGroupChatRequestThird);
+
+        //one message in third chat
+        final CreateMessageRequest createMessageRequestForThirdChat = new CreateMessageRequest(friendOne.getId(), groupService.getGroupById(ThirdGroupChat.getGroupId()).getId(), "test3");
+        groupMessageService.createMessage(friendOne.getEmail(), createMessageRequestForThirdChat);
+
+        //when
+        final MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get(API_PATH + "/chats")
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendThree))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        final List<GroupMessageDTO> groupMessages = mapper.readValue(result.getResponse().getContentAsString(), new TypeReference<>() {});
+        assertThat(groupMessages).hasSize(0);
     }
 
     @Test

@@ -74,7 +74,7 @@ public class GroupService {
 
     public void updateAvatar(final String email, final Long groupId, final MultipartFile file) throws IOException {
         final User user = userService.getUserByEmail(email);
-        if (groupRepository.findCompleteGroupsByUserId(user.getId()).isEmpty())
+        if (getCompleteGroupsByUserId(user.getId()).isEmpty())
             throw new JellyException(JellyExceptionType.NOT_AUTHORIZED);
         final String uuid = UUID.randomUUID().toString();
         blobStorageService.saveChatImage(file, uuid);
@@ -83,7 +83,10 @@ public class GroupService {
     }
 
     public List<Group> getCompleteGroupsByUserId(final Long userId) {
-        return groupRepository.findCompleteGroupsByUserId(userId);
+        return groupRepository.findCompleteGroupsByUserId(userId).stream()
+                .filter(group -> group.getGroupUsers().stream()
+                        .map(groupUser -> groupUser.getUser().getId()).toList().contains(userId))
+                .toList();
     }
 
     public void deleteGroup(Long id) {

@@ -16,9 +16,9 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     List<Group> findByGroupUsersIn(List<GroupUser> groupUserConnected);
 
     @Query("select gr from Group gr " +
-            "left join fetch GroupUser gru on gru.user.id = :userId " +
+            "left join fetch GroupUser gru on gru.group.id = gr.id " +
             "left join fetch User u on u.id = gru.user.id " +
-            "left join fetch Message m on gr.id = m.group.id")
+            "left join fetch Message m on gr.id = m.group.id ")
     List<Group> findCompleteGroupsByUserId(@Param("userId") final Long userId);
 
     @Modifying
