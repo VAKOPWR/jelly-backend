@@ -91,6 +91,6 @@ public class GroupService {
     }
 
     public void deleteGroupFriendship(Long userId1, Long userId2){
-
+        groupRepository.deleteFriendshipGroup(userId1, userId2);
     }
 }

@@ -38,6 +38,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             "   SELECT groupUser.lastChecked " +
             "   FROM GroupUser groupUser " +
             "   WHERE groupUser.group.id = message.group.id " +
+            "   AND groupUser IN :groupUsers " +
             ") " +
             "ORDER BY message.group.id, message.timeSent ASC")
     List<Message> findMessagesAfterTimeInGroups(
