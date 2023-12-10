@@ -14,6 +14,7 @@ import javax.ws.rs.QueryParam;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -38,10 +39,10 @@ public class GroupMessageController {
         return ResponseEntity.ok(messageDTOS);
     }
 
-    @GetMapping("/new")
+    @PostMapping("/new")
     public ResponseEntity<List<GroupMessageDTO>> getNewChats(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
-                                             @RequestBody Set<Long> groupIds) {
-        final List<GroupMessageDTO> groupMessageDTOS = groupMessageService.getNewChats(decodedToken.getEmail(), groupIds);
+                                             @RequestBody List<Long> groupIds) {
+        final List<GroupMessageDTO> groupMessageDTOS = groupMessageService.getNewChats(decodedToken.getEmail(), new HashSet<>(groupIds));
         return ResponseEntity.ok(groupMessageDTOS);
     }
 
