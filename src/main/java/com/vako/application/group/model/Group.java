@@ -55,6 +55,6 @@ public class Group {
     private Set<GroupUser> groupUsers;
 
     public Message getLastSentMessage() {
-        return messages.stream().min(Comparator.comparing(Message::getTimeSent)).orElse(new Message());
+        return messages.stream().max(Comparator.comparing(Message::getTimeSent)).orElse(new Message());
     }
 }
