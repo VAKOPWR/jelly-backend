@@ -54,6 +54,10 @@ public class GroupService {
         return groupRepository.findById(id).orElseThrow();
     }
 
+    public Group getCompleteGroupById(Long id){
+        return groupRepository.findCompleteGroupById(id).orElseThrow();
+    }
+
     public Group createGroup(Group group) {
         return groupRepository.save(group);
     }

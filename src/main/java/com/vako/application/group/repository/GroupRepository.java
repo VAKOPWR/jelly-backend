@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
@@ -41,5 +42,11 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             @Param("userId1") Long userId1,
             @Param("userId2") Long userId2);
 
+    @Query("select gr from Group gr " +
+            "left join fetch GroupUser gru on gru.group.id = gr.id " +
+            "left join fetch User u on u.id = gru.user.id " +
+            "left join fetch Message m on gr.id = m.group.id " +
+            "where gr.id = :groupId")
+    Optional<Group> findCompleteGroupById(@Param("groupId") final Long groupId);
 }
 

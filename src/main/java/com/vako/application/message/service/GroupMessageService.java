@@ -3,11 +3,11 @@ package com.vako.application.message.service;
 import com.vako.api.message.request.CreateMessageRequest;
 import com.vako.application.dto.GroupMessageDTO;
 import com.vako.application.dto.MessageDTO;
+import com.vako.application.fcm.FirebaseCloudMessagingService;
 import com.vako.application.group.model.Group;
 import com.vako.application.group.service.GroupService;
 import com.vako.application.groupUsers.model.GroupUser;
 import com.vako.application.groupUsers.repository.GroupUserRepository;
-import com.vako.application.groupUsers.service.GroupUserService;
 import com.vako.application.image.BlobStorageService;
 import com.vako.application.message.mapper.MessageMapper;
 import com.vako.application.message.model.Message;
@@ -17,20 +17,21 @@ import com.vako.application.user.service.UserService;
 import com.vako.exception.JellyException;
 import com.vako.exception.JellyExceptionType;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.vako.application.fcm.FirebaseNotificationText.NEW_MESSAGE_IN_CHAT;
 
 @Service
 public class GroupMessageService {
@@ -40,28 +41,28 @@ public class GroupMessageService {
     private final String messageImageUrl;
     private final MessageMapper messageMapper;
     private final GroupService groupService;
-    private final GroupUserService groupUserService;
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final BlobStorageService blobStorageService;
     private final GroupUserRepository groupUserRepository;
+    private final FirebaseCloudMessagingService firebaseCloudMessagingService;
 
     @Autowired
     public GroupMessageService(@Value("${azure.blob.url.message}")String messageImageUrl,
                                MessageMapper messageMapper,
                                GroupService groupService,
-                               GroupUserService groupUserService,
                                GroupUserRepository groupUserRepository, MessageRepository messageRepository,
                                UserService userService,
-                               BlobStorageService blobStorageService) {
+                               BlobStorageService blobStorageService,
+                               FirebaseCloudMessagingService firebaseCloudMessagingService) {
         this.messageImageUrl = messageImageUrl;
         this.messageMapper = messageMapper;
         this.groupService = groupService;
-        this.groupUserService = groupUserService;
         this.groupUserRepository = groupUserRepository;
         this.messageRepository = messageRepository;
         this.userService = userService;
         this.blobStorageService = blobStorageService;
+        this.firebaseCloudMessagingService = firebaseCloudMessagingService;
     }
 
 
@@ -108,8 +109,11 @@ public class GroupMessageService {
     @Transactional
     public Long createMessage(final String email, final CreateMessageRequest createMessageRequest) {
         final User user = userService.getUserByEmail(email);
-        final Group group = groupService.getGroupById(createMessageRequest.getGroupId());
+        final Group group = groupService.getCompleteGroupById(createMessageRequest.getGroupId());
         final Message message = messageMapper.createMessageRequestToMessage(createMessageRequest, LocalDateTime.now(), user, group);
+        group.getGroupUsers().stream().map(groupUser -> groupUser.getUser().getRegistrationToken())
+                .filter(Objects::nonNull)
+                .forEach(registrationToken -> firebaseCloudMessagingService.sendMessage(NEW_MESSAGE_IN_CHAT.getMessageWithTwoParams(user.getNickname(), createMessageRequest.getText()) ,registrationToken));
         return messageRepository.save(message).getId();
     }
 
