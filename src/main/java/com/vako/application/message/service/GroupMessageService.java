@@ -86,7 +86,14 @@ public class GroupMessageService {
     }
 
     public List<GroupMessageDTO> getNewChats(String email, Set<Long> ids) {
-        return getChats(email).stream().filter(groupMessageDTO -> !ids.contains(groupMessageDTO.getGroupId())).toList();
+        List<GroupMessageDTO> newAndDeletedChats = getChats(email).stream().filter(groupMessageDTO -> !ids.contains(groupMessageDTO.getGroupId())).toList();
+        ids.stream()
+                .filter(id -> newAndDeletedChats.stream().noneMatch(chat -> chat.getGroupId().equals(id)))
+                .forEach(id -> {
+                    GroupMessageDTO mockedChat = createDeletedChat(id);
+                    newAndDeletedChats.add(mockedChat);
+                });
+        return newAndDeletedChats;
     }
 
     public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageToLoad){
@@ -141,5 +148,15 @@ public class GroupMessageService {
                 .filter(groupUser -> !groupUser.getUser().getNickname().equals(username))
                 .map(groupUser -> groupUser.getUser().getNickname())
                 .findFirst().get();
+    }
+
+    public GroupMessageDTO createDeletedChat(Long id) {
+        GroupMessageDTO deletedChat = new GroupMessageDTO();
+        deletedChat.setGroupId(id);
+        deletedChat.setGroupName("deletedChat");
+        deletedChat.setFriendship(false);
+        deletedChat.setPinned(false);
+        deletedChat.setMuted(false);
+        return deletedChat;
     }
 }
