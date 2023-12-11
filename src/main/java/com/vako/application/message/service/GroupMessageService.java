@@ -118,7 +118,7 @@ public class GroupMessageService {
         return message.getTimeSent().toString();
     }
 
-    public void attachImage(final String email, final Long messageId, final MultipartFile file) throws IOException {
+    public String attachImage(final String email, final Long messageId, final MultipartFile file) throws IOException {
         final User user = userService.getUserByEmail(email);
         if (getChats(email).isEmpty())
             throw new JellyException(JellyExceptionType.NOT_AUTHORIZED);
@@ -126,6 +126,7 @@ public class GroupMessageService {
         blobStorageService.saveMessageImage(file, uuid);
         final String link = messageImageUrl + uuid;
         messageRepository.updateImageUrl(messageId, link);
+        return link;
     }
 
     public void createPersonalChat(Long userId1, Long userId2) {

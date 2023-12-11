@@ -76,7 +76,7 @@ public class GroupService {
         return new NewGroupChatDTO(group.getId(), chatUserDTOS);
     }
 
-    public void updateAvatar(final String email, final Long groupId, final MultipartFile file) throws IOException {
+    public String updateAvatar(final String email, final Long groupId, final MultipartFile file) throws IOException {
         final User user = userService.getUserByEmail(email);
         if (getCompleteGroupsByUserId(user.getId()).isEmpty())
             throw new JellyException(JellyExceptionType.NOT_AUTHORIZED);
@@ -84,6 +84,7 @@ public class GroupService {
         blobStorageService.saveChatImage(file, uuid);
         final String link = groupImageUrl + uuid;
         groupRepository.updateImageUrl(groupId, link);
+        return link;
     }
 
     public List<Group> getCompleteGroupsByUserId(final Long userId) {

@@ -44,8 +44,8 @@ public class UserController {
 
     @PostMapping(value = "/avatars", consumes = {"multipart/form-data"})
     public ResponseEntity<String> storeImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @RequestParam("image") final MultipartFile file) throws IOException {
-        userService.updateAvatar(decodedToken.getEmail(), file);
-        return ResponseEntity.ok("");
+        final String avatarLink = userService.updateAvatar(decodedToken.getEmail(), file);
+        return ResponseEntity.ok(avatarLink);
     }
 
     @PutMapping("/status/update")

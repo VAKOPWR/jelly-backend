@@ -33,8 +33,8 @@ public class GroupController {
     public ResponseEntity<String> storeImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
                                              @RequestParam("image") final MultipartFile file,
                                              @PathVariable("id") final Long groupId) throws IOException {
-        groupService.updateAvatar(decodedToken.getEmail(), groupId, file);
-        return ResponseEntity.ok("");
+        final String groupImageLink = groupService.updateAvatar(decodedToken.getEmail(), groupId, file);
+        return ResponseEntity.ok(groupImageLink);
     }
 
     @DeleteMapping("/{id}")

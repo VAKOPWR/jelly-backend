@@ -11,6 +11,7 @@ import com.vako.api.user.response.BasicUserResponse;
 import com.vako.api.user.response.UserOnlineResponse;
 import com.vako.api.user.response.UserStatusResponse;
 import com.vako.application.fcm.FirebaseCloudMessagingService;
+import com.vako.application.group.model.Group;
 import com.vako.application.group.repository.GroupRepository;
 import com.vako.application.group.service.GroupService;
 import com.vako.application.groupUsers.model.GroupUser;
@@ -62,9 +63,6 @@ public class RelationshipControllerTest extends DbTestBase {
 
     @MockBean
     private FirebaseCloudMessagingService firebaseCloudMessagingService;
-
-    @MockBean
-    private FirebaseMessaging firebaseMessaging;
 
     @Autowired
     private UserStatusRepository userStatusRepository;
@@ -366,6 +364,28 @@ public class RelationshipControllerTest extends DbTestBase {
         Relationship relationship = relationshipRepository.getRelationshipByUserIds(friendOne.getId(), friendTwo.getId()).orElseThrow();
         assertThat(relationship.getStealthChoiceUserTwo()).isEqualTo(StealthChoice.HIDE);
         assertThat(relationship.getStealthChoiceUserOne()).isEqualTo(StealthChoice.PRECISE);
+    }
+
+
+    @Test
+    void shouldDeleteBothGroupAndRelationshipWhenDeletingFriend() throws Exception {
+        //given
+        relationshipRepository.save(new Relationship(friendOne, friendTwo));
+        final Group group = groupRepository.save(new Group(true));
+        groupUserRepository.save(new GroupUser(friendOne, group));
+        groupUserRepository.save(new GroupUser(friendTwo, group));
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete(API_PATH + "/friend/delete/" + friendOne.getId())
+                        .header(HttpHeaders.AUTHORIZATION, idTokenFriendTwo))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        //then
+        assertThat(groupRepository.findAll()).isEmpty();
+        assertThat(groupUserRepository.findAll()).isEmpty();
+        assertThat(relationshipRepository.findAll()).isEmpty();
     }
 
     @Test

@@ -127,11 +127,12 @@ public class UserService {
     }
 
     @Transactional
-    public void updateAvatar(final String email, final MultipartFile file) throws IOException {
+    public String updateAvatar(final String email, final MultipartFile file) throws IOException {
         final String uuid = UUID.randomUUID().toString();
         blobStorageService.saveAvatar(file, uuid);
         final String link = avatarUrl + uuid;
         userRepository.updateAvatarId(email, link);
+        return link;
     }
 
     @Transactional

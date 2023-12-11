@@ -57,11 +57,11 @@ public class GroupMessageController {
     }
 
     @PostMapping("/message/image/{messageId}")
-    public ResponseEntity<Void> attachImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+    public ResponseEntity<String> attachImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
                                             @RequestParam("image") final MultipartFile file,
                                             @PathVariable("messageId") final Long messageId) throws IOException {
-        groupMessageService.attachImage(decodedToken.getEmail(), messageId, file);
-        return ResponseEntity.ok().build();
+        final String groupImageLink = groupMessageService.attachImage(decodedToken.getEmail(), messageId, file);
+        return ResponseEntity.ok(groupImageLink);
     }
 
     @GetMapping("/message/{groupId}")
