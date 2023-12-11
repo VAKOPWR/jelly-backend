@@ -1,5 +1,6 @@
 package com.vako.api.message.controller;
 
+import com.google.api.client.util.DateTime;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.message.request.CreateMessageRequest;
 import com.vako.application.dto.GroupMessageDTO;
@@ -49,10 +50,10 @@ public class GroupMessageController {
 
 
     @PostMapping("/message")
-    public ResponseEntity<Long> createMessage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+    public ResponseEntity<String> createMessage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
                                                 @RequestBody final CreateMessageRequest createMessageRequest) {
-        final Long messageId = groupMessageService.createMessage(decodedToken.getEmail(), createMessageRequest);
-        return ResponseEntity.ok(messageId);
+        final String sentTime = groupMessageService.createMessage(decodedToken.getEmail(), createMessageRequest);
+        return ResponseEntity.ok(sentTime);
     }
 
     @PostMapping("/message/image/{messageId}")
