@@ -103,7 +103,6 @@ public class GroupMessageService {
 
     public List<MessageDTO> loadMessagesNew(List<Long> groupIds, Long userId){
         List<GroupUser> groupUsers = groupUserRepository.findGroupUsersByUserIdAndGroupIds(userId, groupIds);
-        System.out.println(groupUsers);
         List<Message> messages = messageRepository.findMessagesAfterTimeInGroups(groupUsers, groupIds);
         for (GroupUser groupUser: groupUsers){
             groupUser.setLastChecked(LocalDateTime.now());

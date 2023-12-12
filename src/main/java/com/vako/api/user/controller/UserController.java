@@ -26,7 +26,8 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<String> pingUser(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
-        return ResponseEntity.ok().build();
+        User currUser = userService.getUserByEmail(decodedToken.getEmail());
+        return ResponseEntity.ok(currUser.getNickname());
     }
 
     @PutMapping("/nickname/{nickname}")
