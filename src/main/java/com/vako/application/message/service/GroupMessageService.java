@@ -26,7 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -88,21 +90,35 @@ public class GroupMessageService {
     }
 
     public List<GroupMessageDTO> getNewChats(String email, Set<Long> ids) {
-        List<GroupMessageDTO> existingChats = getChats(email);
-        if (existingChats == null || existingChats.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<GroupMessageDTO> newAndDeletedChats = existingChats.stream()
-                .filter(chat -> !ids.contains(chat.getGroupId()))
-                .collect(Collectors.toList());
+        List<GroupMessageDTO> newChats = getChats(email);
+        List<GroupMessageDTO> deletedChats = new ArrayList<>();
+    
+        Set<Long> existingIds = new HashSet<>();
+    
+        newChats.stream()
+                .filter(chat -> {
+                    boolean isNewChat = ids.contains(chat.getGroupId());
+                    if (isNewChat) {
+                        existingIds.add(chat.getGroupId());
+                    }
+                    return !isNewChat;
+                })
+                .forEach(deletedChats::add);
+    
         ids.stream()
-                .filter(id -> newAndDeletedChats.stream().noneMatch(chat -> chat.getGroupId().equals(id)))
+                .filter(id -> !existingIds.contains(id))
                 .forEach(id -> {
                     GroupMessageDTO mockedChat = createDeletedChat(id);
-                    newAndDeletedChats.add(mockedChat);
+                    deletedChats.add(mockedChat);
                 });
+    
+        List<GroupMessageDTO> newAndDeletedChats = new ArrayList<>(deletedChats);
+    
         return newAndDeletedChats;
     }
+    
+
+    
 
     public List<MessageDTO> loadMessagesPaged(Long groupId, Integer pageToLoad){
         Page<Message> messagePage = messageRepository.findMessageByGroup(groupId, PageRequest.of(pageToLoad, 400));

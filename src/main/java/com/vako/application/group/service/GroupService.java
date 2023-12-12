@@ -99,6 +99,8 @@ public class GroupService {
     }
 
     public void deleteGroupFriendship(Long userId1, Long userId2){
-        groupRepository.deleteFriendshipGroup(userId1, userId2);
+        Integer groupIdToDelete = groupRepository.findGroupByUserIds(userId1, userId2);
+        groupRepository.deleteGroupUsersByGroupId(groupIdToDelete);
+        groupRepository.deleteFriendshipGroupByGroupId(groupIdToDelete);
     }
 }
