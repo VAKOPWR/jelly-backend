@@ -3,7 +3,6 @@ package com.vako.api.user.controller;
 import com.google.firebase.auth.FirebaseToken;
 import com.vako.api.user.request.UserStatusUpdateRequest;
 import com.vako.api.user.response.BasicUserResponse;
-import com.vako.application.image.BlobStorageService;
 import com.vako.application.user.model.StealthChoice;
 import com.vako.application.user.model.User;
 import com.vako.application.user.service.UserService;
@@ -60,6 +59,13 @@ public class UserController {
     public ResponseEntity<BasicUserResponse> getUserByIdentifier(
             @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken, @PathVariable("identifier") final String identifier) {
         final BasicUserResponse basicUserResponse = userService.getBasicUserByIdentifier(identifier);
+        return ResponseEntity.ok(basicUserResponse);
+    }
+
+    @GetMapping("/basic")
+    public ResponseEntity<BasicUserResponse> getBasicUserResponseForUser(
+            @RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken) {
+        final BasicUserResponse basicUserResponse = userService.getBasicUserByUserEmail(decodedToken.getEmail());
         return ResponseEntity.ok(basicUserResponse);
     }
 

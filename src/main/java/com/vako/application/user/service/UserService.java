@@ -66,6 +66,10 @@ public class UserService {
         return userMapper.userToBasicUserResponse(getUserByIdentifier(identifier));
     }
 
+    public BasicUserResponse getBasicUserByUserEmail(String email) {
+        return userMapper.userToBasicUserResponse(getUserByEmail(email));
+    }
+
     public User getUserById(Long id) {
         return userRepository.findById(id).orElseThrow();
     }
