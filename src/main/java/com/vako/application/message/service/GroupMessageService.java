@@ -26,10 +26,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static com.vako.application.fcm.FirebaseNotificationText.NEW_MESSAGE_IN_CHAT;
 
@@ -86,7 +88,13 @@ public class GroupMessageService {
     }
 
     public List<GroupMessageDTO> getNewChats(String email, Set<Long> ids) {
-        List<GroupMessageDTO> newAndDeletedChats = getChats(email).stream().filter(groupMessageDTO -> !ids.contains(groupMessageDTO.getGroupId())).toList();
+        List<GroupMessageDTO> existingChats = getChats(email);
+        if (existingChats == null || existingChats.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<GroupMessageDTO> newAndDeletedChats = existingChats.stream()
+                .filter(chat -> !ids.contains(chat.getGroupId()))
+                .collect(Collectors.toList());
         ids.stream()
                 .filter(id -> newAndDeletedChats.stream().noneMatch(chat -> chat.getGroupId().equals(id)))
                 .forEach(id -> {
