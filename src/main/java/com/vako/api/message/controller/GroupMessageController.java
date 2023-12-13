@@ -50,13 +50,13 @@ public class GroupMessageController {
 
 
     @PostMapping("/message")
-    public ResponseEntity<String> createMessage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
+    public ResponseEntity<MessageDTO> createMessage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
                                                 @RequestBody final CreateMessageRequest createMessageRequest) {
-        final String sentTime = groupMessageService.createMessage(decodedToken.getEmail(), createMessageRequest);
-        return ResponseEntity.ok(sentTime);
+        final MessageDTO messageDTO = groupMessageService.createMessage(decodedToken.getEmail(), createMessageRequest);
+        return ResponseEntity.ok(messageDTO);
     }
 
-    @PostMapping("/message/image/{messageId}")
+    @PostMapping(value = "/message/image/{messageId}", consumes = {"multipart/form-data"})
     public ResponseEntity<String> attachImage(@RequestAttribute(name = "FirebaseToken") final FirebaseToken decodedToken,
                                             @RequestParam("image") final MultipartFile file,
                                             @PathVariable("messageId") final Long messageId) throws IOException {

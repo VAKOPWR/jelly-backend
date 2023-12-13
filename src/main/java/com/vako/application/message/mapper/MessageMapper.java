@@ -27,6 +27,7 @@ public interface MessageMapper {
                                           final User user,
                                           final Group group);
 
+    @Mapping(source = "message.id", target = "messageId")
     @Mapping(source = "user.id", target = "senderId")
     @Mapping(source = "group.id", target = "groupId")
     MessageDTO messageToMessageDTO(Message message);
