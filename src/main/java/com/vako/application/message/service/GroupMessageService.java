@@ -139,7 +139,7 @@ public class GroupMessageService {
 
 
     @Transactional
-    public String createMessage(final String email, final CreateMessageRequest createMessageRequest) {
+    public MessageDTO createMessage(final String email, final CreateMessageRequest createMessageRequest) {
         final User user = userService.getUserByEmail(email);
         final Group group = groupService.getCompleteGroupById(createMessageRequest.getGroupId());
         final Message message = messageMapper.createMessageRequestToMessage(createMessageRequest, LocalDateTime.now(), user, group);
@@ -149,7 +149,7 @@ public class GroupMessageService {
                 log.info("Sending fcm to regToken: {}", registrationToken);
                 });
         messageRepository.save(message);
-        return message.getTimeSent().toString();
+        return messageMapper.messageToMessageDTO(message);
     }
 
     public String attachImage(final String email, final Long messageId, final MultipartFile file) throws IOException {

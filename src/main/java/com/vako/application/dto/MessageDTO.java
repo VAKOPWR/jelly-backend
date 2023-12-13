@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class MessageDTO {
 
+    private Long messageId;
     private Long senderId;
     private Long groupId;
     private String text;
