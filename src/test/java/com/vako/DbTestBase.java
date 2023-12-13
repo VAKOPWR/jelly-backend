@@ -13,9 +13,9 @@ import org.testcontainers.junit.jupiter.Container;
 public abstract class DbTestBase {
 
     protected static final String UID_1 = "1rvwaZpH31MP58GplDTIkb7ygh43";
-    protected static final String UID_2 = "aBsM7hWfxJTnD3McQyIm1MH5gbf2";
+    protected static final String UID_2 = "I3l2ACPuQWd0tHNhuc1kNFGVUCU2";
 
-    protected static final String UID_3 = "MQVATlqoS7dtrY8zntmZWHxkElH2";
+    protected static final String UID_3 = "ECpSUB6mHtPdvUWmTGyEZwcAkKi2";
 
     protected static final String API_PATH = "/api/v1";
     protected static String token;

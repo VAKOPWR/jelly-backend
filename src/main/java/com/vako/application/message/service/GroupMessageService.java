@@ -17,6 +17,7 @@ import com.vako.application.user.service.UserService;
 import com.vako.exception.JellyException;
 import com.vako.exception.JellyExceptionType;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 import static com.vako.application.fcm.FirebaseNotificationText.NEW_MESSAGE_IN_CHAT;
 
 @Service
+@Slf4j
 public class GroupMessageService {
 
     private static final int DEFAULT_PAGE_SIZE = 40;
@@ -143,7 +145,9 @@ public class GroupMessageService {
         final Message message = messageMapper.createMessageRequestToMessage(createMessageRequest, LocalDateTime.now(), user, group);
         group.getGroupUsers().stream().map(groupUser -> groupUser.getUser().getRegistrationToken())
                 .filter(Objects::nonNull)
-                .forEach(registrationToken -> firebaseCloudMessagingService.sendMessage(NEW_MESSAGE_IN_CHAT.getMessageWithTwoParams(user.getNickname(), createMessageRequest.getText()) ,registrationToken));
+                .forEach(registrationToken -> {firebaseCloudMessagingService.sendMessage(NEW_MESSAGE_IN_CHAT.getMessageWithTwoParams(user.getNickname(), createMessageRequest.getText()) ,registrationToken);
+                log.info("Sending fcm to regToken: {}", registrationToken);
+                });
         messageRepository.save(message);
         return message.getTimeSent().toString();
     }

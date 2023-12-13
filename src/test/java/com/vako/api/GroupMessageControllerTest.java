@@ -52,6 +52,7 @@ import java.util.List;
 import static com.vako.application.relationship.model.RelationshipStatus.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -145,6 +146,8 @@ public class GroupMessageControllerTest extends DbTestBase {
     @Test
     void shouldCreateNewMessageInPersonalChatBetweenTwoFriends() throws Exception {
         //given
+        final String regToken = "regToken";
+        userRepository.updateRegistrationToken(friendTwo.getEmail(), regToken);
         relationshipRepository.save(new Relationship(friendOne, friendTwo));
         CreateGroupChatRequest createGroupChatRequest = new CreateGroupChatRequest("TestGroup", "Descr", List.of(friendOne.getId(), friendTwo.getId()));
         NewGroupChatDTO newGroupChat = groupService.createGroup(createGroupChatRequest);
@@ -162,6 +165,7 @@ public class GroupMessageControllerTest extends DbTestBase {
         final List<Group> groups = groupRepository.findAll();
         final List<GroupUser> groupUsers = groupUserRepository.findAll();
         final Message message = messageRepository.findAll().get(0);
+        Mockito.verify(firebaseMessaging).sendMessage(any(), eq(regToken));
         assertThat(groups.get(0).getId()).isEqualTo(newGroupChat.getGroupId());
         assertThat(groups.get(0).getName()).isEqualTo(createGroupChatRequest.getName());
         assertThat(groups.get(0).getDescription()).isEqualTo(createGroupChatRequest.getDescription());
