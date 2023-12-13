@@ -37,6 +37,15 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
             @Param("userId1") Long userId1,
             @Param("userId2") Long userId2);
 
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM Messages g " +
+            "WHERE g.group.id = :gid")
+    void deleteMessagesByGroupId(
+            @Param("gid") Integer groupId);
+
+
     @Modifying
     @Transactional
     @Query(value = "DELETE FROM GroupUser g " +
